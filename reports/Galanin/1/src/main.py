@@ -1,4 +1,5 @@
 import math
+import random
 
 def print_headTable():
 	print("| %16s | %16s | %16s | %16s |" % (
@@ -19,12 +20,13 @@ b = 9
 d = 0.5
 L = 4
 
-alpha = 10e-6
-Em = 10e-6
+alpha = 0.5
+Em = 1e-6
 
 w = []
 for i in range(L):
-	w.append(0)
+	w.append(random.random() * 0.02 - 0.01)
+	print(w[i])
 
 T = 1
 
@@ -32,16 +34,12 @@ m = 30
 m2 = 15
 etalon = []
 for i in range(m + m2):
-	etalon.append(0)
-
-for i in range(m + m2):
 	step = 0.1
 	x = step * i
-	etalon[i] = alpha * math.sin(b * x) + d
+	etalon.append(a * math.sin(b * x) + d)
 
 while 1:
 	E = 0
-
 	for i in range (m - L):
 		y1 = 0
 		for j in range(L):
@@ -56,18 +54,19 @@ while 1:
 		E += 0.5 * math.pow( (y1 - etalon[i + L]), 2)
 
 	if E < Em:
-		break;
+		break
 
 print("Training sample:")
 print_headTable()
 
 trainingSample = []
 
-for i in range(m + m2):
+for i in range(m):
 	trainingSample.append(0)
 
-for i in range(m):
-	trainingSample[i] = 0
+	if i % L == 0:
+		print("%d epoxa" % (i / 4 + 1))
+	
 	for j in range(L):
 		trainingSample[i] += w[j] * etalon[j + i - L]
 
@@ -84,16 +83,19 @@ print("Forecasting the future:")
 print_headTable()
 
 for i in range(m2):
-	trainingSample[i + m] = 0
+	trainingSample.append(0)
+
+	if i % L == 0:
+		print("%d epoxa" % (i / 4 + 1))
 
 	for j in range(L):
 		trainingSample[i + m] += w[j] * etalon[m - L + j + i]
 
-	trainingSample[i] += T
+	trainingSample[i] -= T
 
 	print("| %16d | %16lf | %16lf | %16lf |" % (
 		i + m,
-		etalon[i],
-		trainingSample[i],
-		etalon[i] - trainingSample[i]
+		etalon[i + m],
+		trainingSample[i + m],
+		etalon[i + m] - trainingSample[i + m]
 	))
