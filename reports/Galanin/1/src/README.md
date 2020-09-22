@@ -1,5 +1,22 @@
-## Открытие проекта
+# What I need to have
 
-Проект написан на `Python` в `Visual Studio`.
+- On Linux (Ubuntu)
+    - `python3` - for compile on Python3
 
-Для открытия проекта в `Visual Studio` запустить `*.sln` файл.
+    ```bash
+    sudo apt update
+    sudo apt install python3
+    ```
+
+    - `make` - for Makefile
+
+    ```bash
+    sudo apt update
+    sudo apt install make
+    ```
+
+# How to compile project
+
+```
+make
+```
