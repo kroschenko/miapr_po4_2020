@@ -1,0 +1,22 @@
+\documentclass[12pt, a4paper, simple]{eskdtext}
+
+\usepackage{sty/title_variables}
+\usepackage{sty/eskd_variables}
+\usepackage{sty/sourceCode}
+
+% Графа 2 (обозначение документа)
+\ESKDsignature{\code-.... .... ....}
+
+\begin{document}
+    \begin{ESKDtitlePage}
+        \input{input/titlePage.tex}
+    \end{ESKDtitlePage}
+
+    \begin{center}
+        \textbf{Лабораторная работа №\titlePageLabNumber}\\
+    \end{center}
+
+    \textbf{Тема}: "\titlePageTopic".\\
+
+    \input{input/task.tex}
+\end{document}
