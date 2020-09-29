@@ -2,9 +2,9 @@ import math
 import random
 
 a = 2
-b = 9
-d = 0.4
-L = 3
+b = 5
+d = 0.6
+L = 5
 
 alpha = 0.1
 Em = 0.0001
