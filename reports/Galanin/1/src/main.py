@@ -26,7 +26,7 @@ Em = 1e-6
 w = []
 for i in range(L):
 	w.append(random.random() * 0.02 - 0.01)
-	print(w[i])
+	print("w[%d] = %lf" % (i, w[i]))
 
 T = 1
 
