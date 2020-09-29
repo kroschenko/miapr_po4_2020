@@ -2,17 +2,17 @@ import math
 import random
 
 def print_headTable():
-	print("| %16s | %16s | %16s | %16s |" % (
-		"y[]",
-		"etalonoe zn",
-		"Polychenoe zn",
-		"Otklonenie"
+	print("| %20s | %20s | %20s | %20s |" % (
+		"Итерация",
+		"Эталонное значение",
+		"Полученное значение",
+		"Отклонение"
 	))
 	print("| %16s | %16s | %16s | %16s |" % (
-		"----------------",
-		"----------------",
-		"----------------",
-		"----------------"
+		"--------------------",
+		"--------------------",
+		"--------------------",
+		"--------------------"
 	))
 
 a = 1
@@ -32,31 +32,31 @@ T = 1
 
 m = 30
 m2 = 15
-etalon = []
+e = []
 for i in range(m + m2):
 	step = 0.1
 	x = step * i
-	etalon.append(a * math.sin(b * x) + d)
+	e.append(a * math.sin(b * x) + d)
 
 while 1:
 	E = 0
 	for i in range (m - L):
 		y1 = 0
 		for j in range(L):
-			y1 += w[j] * etalon[i + j]
+			y1 += w[j] * e[i + j]
 		y1 -= T
 
 		for j in range(L):
-			w[j] -= alpha * ( y1 - etalon[i + L] ) * etalon[i + j]
+			w[j] -= alpha * ( y1 - e[i + L] ) * e[i + j]
 
-		T += alpha * (y1 - etalon[i + L])
+		T += alpha * (y1 - e[i + L])
 
-		E += 0.5 * math.pow( (y1 - etalon[i + L]), 2)
+		E += 0.5 * math.pow( (y1 - e[i + L]), 2)
 
 	if E < Em:
 		break
 
-print("Training sample:")
+print("Результаты обучение:")
 print_headTable()
 
 trainingSample = []
@@ -65,37 +65,37 @@ for i in range(m):
 	trainingSample.append(0)
 
 	if i % L == 0:
-		print("%d epoxa" % (i / 4 + 1))
+		print("%d эпоха" % (i / 4 + 1))
 	
 	for j in range(L):
-		trainingSample[i] += w[j] * etalon[j + i - L]
+		trainingSample[i] += w[j] * e[j + i - L]
 
 	trainingSample[i] -= T
 
-	print("| %16d | %16lf | %16lf | %16lf |" % (
+	print("| %20d | %20lf | %20lf | %20lf |" % (
 		i,
-		etalon[i],
+		e[i],
 		trainingSample[i],
-		etalon[i] - trainingSample[i]
+		e[i] - trainingSample[i]
 	))
 
-print("Forecasting the future:")
+print("Результаты прогнозирование:")
 print_headTable()
 
 for i in range(m2):
 	trainingSample.append(0)
 
 	if i % L == 0:
-		print("%d epoxa" % (i / 4 + 1))
+		print("%d эпоха" % (i / 4 + 1))
 
 	for j in range(L):
-		trainingSample[i + m] += w[j] * etalon[m - L + j + i]
+		trainingSample[i + m] += w[j] * e[m - L + j + i]
 
-	trainingSample[i] -= T
+	trainingSample[i] += T
 
-	print("| %16d | %16lf | %16lf | %16lf |" % (
+	print("| %20d | %20lf | %20lf | %20lf |" % (
 		i + m,
-		etalon[i + m],
+		e[i + m],
 		trainingSample[i + m],
-		etalon[i + m] - trainingSample[i + m]
+		e[i + m] - trainingSample[i + m]
 	))
