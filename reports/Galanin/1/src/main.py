@@ -91,7 +91,7 @@ for i in range(m2):
 	for j in range(L):
 		trainingSample[i + m] += w[j] * e[m - L + j + i]
 
-	trainingSample[i] += T
+	trainingSample[i + m] -= T
 
 	print("| %20d | %20lf | %20lf | %20lf |" % (
 		i + m,
