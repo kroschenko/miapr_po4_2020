@@ -4,17 +4,17 @@ import random
 a = 2
 b = 5
 d = 0.6
-input = 5
+inputs = 5
 
 alpha = 0.1
-Em = 0.0001
+Em = 1e-6
 
-T = 0.6
+T = 0.6 
 w = []
 
 print("Весовые коэффициенты:")
 
-for i in range(input):
+for i in range(inputs):
     w.append(random.random())
     print(w[i])
 
@@ -28,17 +28,17 @@ for i in range(n + n2):
 
 while 1:
     E = 0
-    for i in range(n - input):
+    for i in range(n - inputs):
         y1 = 0
-        for j in range(input):
+        for j in range(inputs):
             y1 += w[j] * et[i + j]
         y1 -= T
 
-        for j in range(input):
-            w[j] -= alpha * (y1 - et[i + input]) * et[i + j]
-        T += alpha * (y1 - et[i + input])
-        E += 0.5 * ((y1 - et[i + input]) ** 2)
-
+        for j in range(inputs):
+            w[j] -= alpha * (y1 - et[i + inputs]) * et[i + j]
+        T += alpha * (y1 - et[i + inputs])
+        E += 0.5 * ((y1 - et[i + inputs]) ** 2)
+    print("Error: ", E)
     if E < Em:
         break
 
@@ -54,16 +54,15 @@ print(" %2s  %2s  %2s  %2s " % (
 training = []
 for i in range(n):
     training.append(0)
-
-    for j in range(input):
-        training[i] += w[j] * et[j + i - input]
+    for j in range(inputs):
+        training[i] += w[j] * et[j + i]
     training[i] -= T
 
     print(" %2d  %9lf  %18lf  %19lf " % (
         i,
-        et[i],
+        et[i + inputs],
         training[i],
-        et[i] - training[i]
+        training[i] - et[i + inputs]
     ))
 
 print("\nРезультат прогназированния:\n")
@@ -77,8 +76,8 @@ print(" %2s  %2s  %2s  %2s " % (
 for i in range(n2):
     training.append(0)
 
-    for j in range(input):
-        training[i + n] += w[j] * et[n - input + j + i]
+    for j in range(inputs):
+        training[i + n] += w[j] * et[n - inputs + j + i]
 
     training[i + n] -= T
 
@@ -86,5 +85,5 @@ for i in range(n2):
         i + n,
         et[i + n],
         training[i + n],
-        et[i + n] - training[i + n]
+        training[i + n] - et[i + n]
     ))
