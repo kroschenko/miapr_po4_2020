@@ -1,0 +1,21 @@
+\def\No{\textnumero} % Символ номера
+
+% Графа 1 (наименование изделия/документа)
+\ESKDcolumnI{Лабораторная работа №\titlePageLabNumber\\\titlePageTopic}
+
+% Графу 2 (обозначение документа)
+%\ESKDcolumnII{}
+\newcommand{\code}{ЛР.ПО4.190333}
+
+% Графа 4 (литералы)
+\ESKDcolumnIVfII{Л}
+
+\ESKDcolumnIX{БрГТУ}
+
+% Графа 11 (фамилии лиц, подписывающих документ) задают команды
+% Разработ.
+\ESKDcolumnXIfI{\titlePageStudentSurname}
+% Пров.
+\ESKDcolumnXIfII{\titlePageTeacherSurname}
+% Н. контр.
+\ESKDcolumnXIfV{\titlePageTeacherSurname} 
