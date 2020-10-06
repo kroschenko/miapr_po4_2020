@@ -1,9 +1,10 @@
 import math
 import random
+import matplotlib.pyplot as plt
 
 def print_headTable():
 	print("| %20s | %20s | %20s | %20s |" % (
-		"Итерация",
+		"y[]",
 		"Эталонное значение",
 		"Полученное значение",
 		"Отклонение"
@@ -28,16 +29,33 @@ for i in range(L):
 	w.append(random.random() * 0.02 - 0.01)
 	print("w[%d] = %lf" % (i, w[i]))
 
-T = 1
+T = 0.5
 
 m = 30
 m2 = 15
+
+print("a = %d" % a)
+print("b = %d" % b)
+print("d = %f" % d)
+print("L = %d" % L)
+print("T = %f" % T)
+print("alpha = %f" % a)
+print("Em = %f" % Em)
+print("m = %d" % m)
+print("m2 = %d" % m2)
+
 e = []
 for i in range(m + m2):
 	step = 0.1
 	x = step * i
 	e.append(a * math.sin(b * x) + d)
 
+print("|%20s|%20s|" % ("Eras", "E"))
+print("|%20s|%20s|" % (
+	"--------------------",
+	"--------------------"
+))
+eras = 0
 while 1:
 	E = 0
 	for i in range (m - L):
@@ -52,9 +70,16 @@ while 1:
 		T += alpha * (y1 - e[i + L])
 
 		E += 0.5 * math.pow( (y1 - e[i + L]), 2)
+		eras += 1
+
+	plt.plot(eras, E, 'o-m') # точки на графике
+
+	print("|%20d|%20f|" % (eras, E))
 
 	if E < Em:
 		break
+
+print("\nEras %d\n" % eras)
 
 print("Результаты обучение:")
 print_headTable()
@@ -63,20 +88,17 @@ trainingSample = []
 
 for i in range(m):
 	trainingSample.append(0)
-
-	if i % L == 0:
-		print("%d эпоха" % (i / 4 + 1))
 	
 	for j in range(L):
-		trainingSample[i] += w[j] * e[j + i - L]
+		trainingSample[i] += w[j] * e[j + i]
 
 	trainingSample[i] -= T
 
 	print("| %20d | %20lf | %20lf | %20lf |" % (
 		i,
-		e[i],
+		e[i + L],
 		trainingSample[i],
-		e[i] - trainingSample[i]
+		e[i + L] - trainingSample[i]
 	))
 
 print("Результаты прогнозирование:")
@@ -84,9 +106,6 @@ print_headTable()
 
 for i in range(m2):
 	trainingSample.append(0)
-
-	if i % L == 0:
-		print("%d эпоха" % (i / 4 + 1))
 
 	for j in range(L):
 		trainingSample[i + m] += w[j] * e[m - L + j + i]
@@ -99,3 +118,5 @@ for i in range(m2):
 		trainingSample[i + m],
 		e[i + m] - trainingSample[i + m]
 	))
+
+plt.show()
