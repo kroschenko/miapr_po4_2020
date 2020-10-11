@@ -1,122 +1,147 @@
-import math
 import random
+import math
 import matplotlib.pyplot as plt
 
-def print_headTable():
-	print("| %20s | %20s | %20s | %20s |" % (
-		"y[]",
-		"Эталонное значение",
-		"Полученное значение",
-		"Отклонение"
-	))
-	print("| %16s | %16s | %16s | %16s |" % (
-		"--------------------",
-		"--------------------",
-		"--------------------",
-		"--------------------"
-	))
+class lab():
+	def __init__(self, a, b, d, L, Em, T, m, m2):
+		self.a = a
+		print("%6s = %-20.12f - parametr for function y" % ("a", self.a))
 
-a = 1
-b = 9
-d = 0.5
-L = 4
+		self.b = b
+		print("%6s = %-20.12f - parametr for function y" % ("b", self.b))
 
-alpha = 0.5
-Em = 1e-6
+		self.d = d
+		print("%6s = %-20.12f - parametr for function y" % ("d", self.d))
 
-w = []
-for i in range(L):
-	w.append(random.random() * 0.02 - 0.01)
-	print("w[%d] = %lf" % (i, w[i]))
+		self.L = L
+		print("%6s = %-20d - numbers of inputs NN" % ("L", self.L))
 
-T = 0.5
+		self.Em = Em
+		print("%6s = %-20.12f - minimal squared error" % ("Em", self.Em))
 
-m = 30
-m2 = 15
+		self.T = T
+		print("%6s = %-20.12f - Threshold" % ("T", self.T))
 
-print("a = %d" % a)
-print("b = %d" % b)
-print("d = %f" % d)
-print("L = %d" % L)
-print("T = %f" % T)
-print("alpha = %f" % a)
-print("Em = %f" % Em)
-print("m = %d" % m)
-print("m2 = %d" % m2)
+		self.m = m
+		print("%6s = %-20d - number of training iterations" % ("m", self.m))
 
-e = []
-for i in range(m + m2):
-	step = 0.1
-	x = step * i
-	e.append(a * math.sin(b * x) + d)
+		self.m2 = m2
+		print("%6s = %-20d - number of forecasting iterations" % ("m2", self.m2))
 
-print("|%20s|%20s|" % ("Eras", "E"))
-print("|%20s|%20s|" % (
-	"--------------------",
-	"--------------------"
-))
-eras = 0
-while 1:
-	E = 0
-	for i in range (m - L):
-		y1 = 0
-		for j in range(L):
-			y1 += w[j] * e[i + j]
-		y1 -= T
+	def generate_w(self, left_point, right_point):
+		self.w = []
+		for i in range(self.L):
+			self.w.append(random.random() * right_point - left_point)
+			
+	def print_w(self):
+		for i in range(self.L):
+			print("w[%3d] = %20.12f - weight" % (i, self.w[i]))
 
-		for j in range(L):
-			w[j] -= alpha * ( y1 - e[i + L] ) * e[i + j]
+	def generate_e(self, step):
+		self.e = []
+		for i in range(self.m + self.m2):
+			x = step * i
+			result = self.a * math.sin( self.b * x ) + self.d
+			self.e.append(result)
 
-		T += alpha * (y1 - e[i + L])
+	def print_e(self):
+		for i in range(self.m + self.m2):
+			print("e[%3d] = %20.12f - etalon value" % (i, self.e[i]))
 
-		E += 0.5 * math.pow( (y1 - e[i + L]), 2)
-		eras += 1
+	def WidrowHoffAlgorithm_constAlpha(self, alpha):
+		print("| %20s | %20s |" % ("Eras", "E"))
+		print("| %16s | %16s |" % ("--------------------", "--------------------"))
 
-	plt.plot(eras, E, 'o-m') # точки на графике
+		eras = 0
+		valueXforGraph = []
+		valueYforGraph = []
+		while 1:
+			E = 0
+			for i in range(self.m - self.L):
+				y1 = 0
+				for j in range(self.L):
+					y1 += self.w[j] * self.e[i + j]
+				y1 -= self.T
+				for j in range(self.L):
+					self.w[j] -= alpha * (y1 - self.e[i + self.L]) * self.e[i + j]
+				self.T += alpha * (y1 - self.e[i + self.L])
+				E += 0.5 * math.pow( (y1 - self.e[i + self.L]), 2 )
+				eras += 1
 
-	print("|%20d|%20f|" % (eras, E))
+			print("| %20d | %20.12f |" % (eras, E))
+			valueXforGraph.append(eras)
+			valueYforGraph.append(E)
 
-	if E < Em:
-		break
+			if E < self.Em:
+				break
+		plt.plot(valueXforGraph, valueYforGraph, 'Db', label="Contantly alpha")
 
-print("\nEras %d\n" % eras)
+	def printResult(self):
+		def print_headTable():
+			print("| %20s | %20s | %20s | %20s |" % (
+				"y[]",
+				"Эталонное значение",
+				"Полученное значение",
+				"Отклонение"
+			))
+			print("| %16s | %16s | %16s | %16s |" % (
+				"--------------------",
+				"--------------------",
+				"--------------------",
+				"--------------------"
+			))
 
-print("Результаты обучение:")
-print_headTable()
+		trainingSample = []
+		print("Result learning")
+		print_headTable()
+		for i in range(self.m):
+			trainingSample.append(0)
+			for j in range(self.L):
+				trainingSample[i] += self.w[j] * self.e[j + i]
+			trainingSample[i] -= self.T
+			print("| %20d | %20.12f | %20.12f | %20.12f |" % (
+				i,
+				self.e[i + self.L],
+				trainingSample[i],
+				self.e[i + self.L] - trainingSample[i]
+			))
+		
+		print("Results forecasting")
+		print_headTable()
+		for i in range(self.m2):
+			trainingSample.append(0)
+			for j in range(self.L):
+				trainingSample[i + self.m] += self.w[j] * self.e[self.m - self.L + j + i]
+			trainingSample[i + self.m] -= self.T
+			print("| %20d | %20.12f | %20.12f | %20.12f |" % (
+				i + self.m,
+				self.e[i + self.m],
+				trainingSample[i + self.m],
+				self.e[i + self.m] - trainingSample[i + self.m]
+			))
 
-trainingSample = []
-
-for i in range(m):
-	trainingSample.append(0)
+"""Main"""
 	
-	for j in range(L):
-		trainingSample[i] += w[j] * e[j + i]
+x = lab(
+	1,		# a argument for function y
+	9,		# b argument for function y
+	0.5,	# d argument for function y
+	4,		# L number of inputs NN
+	1e-11,	# Em argument for algorithm
+	0.5,	# T argument for algorithm
+	30,		# m number of operations for training results
+	15,		# m2 numper of operation for forecasting results
+)
 
-	trainingSample[i] -= T
+x.generate_w(0.01, 0.02) # arguments (left_point, right_point)
+x.print_w()
 
-	print("| %20d | %20lf | %20lf | %20lf |" % (
-		i,
-		e[i + L],
-		trainingSample[i],
-		e[i + L] - trainingSample[i]
-	))
+x.generate_e(0.1) # argument (step) for y
+x.print_e()
 
-print("Результаты прогнозирование:")
-print_headTable()
+x.WidrowHoffAlgorithm_constAlpha(0.5) # argument (alpha)
+x.printResult()
 
-for i in range(m2):
-	trainingSample.append(0)
-
-	for j in range(L):
-		trainingSample[i + m] += w[j] * e[m - L + j + i]
-
-	trainingSample[i + m] -= T
-
-	print("| %20d | %20lf | %20lf | %20lf |" % (
-		i + m,
-		e[i + m],
-		trainingSample[i + m],
-		e[i + m] - trainingSample[i + m]
-	))
-
-plt.show()
+plt.title("Error change graph") # Python write title in graph
+plt.legend() # Python write legend in graph
+plt.show() # Python open new windows and show graph
