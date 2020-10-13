@@ -76,6 +76,39 @@ class lab():
 				break
 		plt.plot(valueXforGraph, valueYforGraph, 'Db', label="Contantly alpha")
 
+	def WidrowHoffAlgorithm_adaptiveAlpha(self, alpha):
+		print("| %20s | %20s |" % ("Eras", "E"))
+		print("| %16s | %16s |" % ("--------------------", "--------------------"))
+
+		eras = 0
+		valueXforGraph = []
+		valueYforGraph = []
+		while 1:
+			E = 0
+			for i in range(self.m - self.L):
+				y1 = 0
+				for j in range(self.L):
+					y1 += self.w[j] * self.e[i + j]
+				y1 -= self.T
+				for j in range(self.L):
+					self.w[j] -= alpha * (y1 - self.e[i + self.L]) * self.e[i + j]
+				self.T += alpha * (y1 - self.e[i + self.L])
+				E += 0.5 * math.pow( (y1 - self.e[i + self.L]), 2 )
+				eras += 1
+
+				x2 = 0
+				for q in range(self.L):
+					x2 += pow(self.e[i + q], 2)
+				alpha = 1 / (1 + x2)
+
+			print("| %20d | %20.12f |" % (eras, E))
+			valueXforGraph.append(eras)
+			valueYforGraph.append(E)
+			
+			if E < self.Em:
+				break
+		plt.plot(valueXforGraph, valueYforGraph, 'py', label="Adaptive alpha")
+
 	def printResult(self):
 		def print_headTable():
 			print("| %20s | %20s | %20s | %20s |" % (
@@ -133,6 +166,8 @@ x = lab(
 	15,		# m2 numper of operation for forecasting results
 )
 
+print("\n= = = = = - - - - - Constantly alpha - - - - - = = = = =\n")
+
 x.generate_w(0.01, 0.02) # arguments (left_point, right_point)
 x.print_w()
 
@@ -140,6 +175,17 @@ x.generate_e(0.1) # argument (step) for y
 x.print_e()
 
 x.WidrowHoffAlgorithm_constAlpha(0.5) # argument (alpha)
+x.printResult()
+
+print("\n= = = = = - - - - - Adaptive alpha - - - - - = = = = =\n")
+
+x.generate_w(0.01, 0.02) # arguments (left_point, right_point)
+x.print_w()
+
+x.generate_e(0.1) # argument (step) for y
+x.print_e()
+
+x.WidrowHoffAlgorithm_adaptiveAlpha(0.5) # argument (alpha)
 x.printResult()
 
 plt.title("Error change graph") # Python write title in graph
