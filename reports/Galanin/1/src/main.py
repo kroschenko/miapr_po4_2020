@@ -32,7 +32,7 @@ class lab():
 		self.w = []
 		for i in range(self.L):
 			self.w.append(random.random() * right_point - left_point)
-			
+
 	def print_w(self):
 		for i in range(self.L):
 			print("w[%3d] = %20.12f - weight" % (i, self.w[i]))
@@ -66,8 +66,8 @@ class lab():
 					self.w[j] -= alpha * (y1 - self.e[i + self.L]) * self.e[i + j]
 				self.T += alpha * (y1 - self.e[i + self.L])
 				E += 0.5 * math.pow( (y1 - self.e[i + self.L]), 2 )
-				eras += 1
 
+			eras += 1
 			print("| %20d | %20.12f |" % (eras, E))
 			valueXforGraph.append(eras)
 			valueYforGraph.append(E)
@@ -105,7 +105,7 @@ class lab():
 				trainingSample[i],
 				self.e[i + self.L] - trainingSample[i]
 			))
-		
+
 		print("Results forecasting")
 		print_headTable()
 		for i in range(self.m2):
@@ -121,7 +121,7 @@ class lab():
 			))
 
 """Main"""
-	
+
 x = lab(
 	1,		# a argument for function y
 	9,		# b argument for function y
