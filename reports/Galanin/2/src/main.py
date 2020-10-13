@@ -137,7 +137,7 @@ class lab():
 				i,
 				self.e[i + self.L],
 				trainingSample[i],
-				self.e[i + self.L] - trainingSample[i]
+				math.pow(self.e[i + self.L] - trainingSample[i], 2)
 			))
 
 		print("Results forecasting")
@@ -151,7 +151,7 @@ class lab():
 				i + self.m,
 				self.e[i + self.m],
 				trainingSample[i + self.m],
-				self.e[i + self.m] - trainingSample[i + self.m]
+				math.pow(self.e[i + self.m] - trainingSample[i + self.m], 2)
 			))
 
 """Main"""
@@ -161,7 +161,7 @@ x = lab(
 	9,		# b argument for function y
 	0.5,	# d argument for function y
 	4,		# L number of inputs NN
-	1e-11,	# Em argument for algorithm
+	1e-6,	# Em argument for algorithm
 	0.5,	# T argument for algorithm
 	30,		# m number of operations for training results
 	15,		# m2 numper of operation for forecasting results
