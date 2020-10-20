@@ -15,6 +15,7 @@ int main() {
 	srand(time(0));
 	int a = 1, b = 9, n = 4, Num_Learning = 30, Num_Predicted = 15;
 	double d = 0.5, step = 0.1, x = 0, E, Em = 0.001, T = 1;
+	int epox = 0;
 	double* W = new double[n];
 	for (int i = 0; i < n; i++) {
 		W[i] = 1.0 / (double)rand();
@@ -43,12 +44,17 @@ int main() {
 
 			T += step_learning * (y1 - Y[i + n]); //изменение порога нейронной сети
 			E += 0.5 * pow(y1 - Y[i + n], 2); //расчет суммарной среднеквадратичной ошибки
-		}
+		}		
+		epox++;
+		
 	} while (E > Em);
+	cout <<"количество эпох: "  << epox;
 	print_result(n, T, Y, Num_Learning, N, Num_Predicted, W);
 	delete[] Y;
 	delete[] W;
+	system("pause");
 	return 0;
+	
 }
 
 double function(int a, int b, double x, double d)
