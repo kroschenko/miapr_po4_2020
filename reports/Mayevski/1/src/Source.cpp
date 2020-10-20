@@ -1,89 +1,84 @@
-
 #include <iostream>
+#include <Windows.h>
 #include <iomanip>
+#include <ctime>
+#include <cmath>
+
 using namespace std;
 
+double function(int a, int b, double x, double d);
+void print_result(int n, double T, double* Y, int Num_Learning, int N, int n_protected, double* W);
+
 int main() {
-	setlocale(LC_ALL, "rus");
+	SetConsoleOutputCP(1251);
 	system("color f0");
-	int a = 1,
-		b = 9,
-		en = 4, //количество входов ИНС
-		n = 30, //количесвто значений, на которых производится обучение
-		predict = 15; //количесвто значений, на которых производится прогнозирование
-
-	double d = 0.5,
-		Em = 0.01, //минимальная среднеквадратичная ошибка сети
-		E, //суммарная среднеквадратичная ошибка
-		T = 1; //порог нейронной сети
-
-	double* W = new double[en]; //весовые коэффициенты
-	for (int i = 0; i < en; i++) { //задаем случайным образом весовые коэффициенты
-		W[i] = static_cast <double> (rand()) / (static_cast <double>(RAND_MAX / 2));
+	srand(time(0));
+	int a = 1, b = 9, n = 4, Num_Learning = 30, Num_Predicted = 15;
+	double d = 0.5, step = 0.1, x = 0, E, Em = 0.001, T = 1;
+	double* W = new double[n];
+	for (int i = 0; i < n; i++) {
+		W[i] = 1.0 / (double)rand();
 	}
-
-	double* etalon = new double[n + predict]; //эталонные значения y
-	for (int i = 0; i < n + predict; i++) { //вычисляем эталонные значения
-		double step = 0.1, //шаг
-			x = step * i;
-		etalon[i] = a * sin(b * x) + d;
+	int N = Num_Learning + Num_Predicted;
+	double* Y = new double[N];
+	for (int i = 0; i < N; i++) {
+		x += step;
+		Y[i] = function(a, b, x, d);
 	}
-
+	double y1, //выходное значение нейронной сети
+		step_learning = 0.3; //скорость обучения
 	do {
-		double y1, //выходное значение нейронной сети
-			A = 0.005; //скорость обучения
 		E = 0;
-
-		for (int i = 0; i < n - en; i++) {
+		for (int i = 0; i < Num_Learning - n; i++) {
 			y1 = 0;
 
-			for (int j = 0; j < en; j++) { //векторы выходной активности сети
-				y1 += W[j] * etalon[i + j];
+			for (int j = 0; j < n; j++) { //векторы выходной активности сети
+				y1 += W[j] * Y[i + j];
 			}
 			y1 -= T;
 
-			for (int j = 0; j < en; j++) { //изменение весовых коэффициентов
-				W[j] -= A * (y1 - etalon[i + en]) * etalon[i + j];
+			for (int j = 0; j < n; j++) { //изменение весовых коэффициентов
+				W[j] -= step_learning * (y1 - Y[i + n]) * Y[i + j];
 			}
 
-			T += A * (y1 - etalon[i + en]); //изменение порога нейронной сети
-			E += 0.5 * pow(y1 - etalon[i + en], 2); //расчет суммарной среднеквадратичной ошибки
-
+			T += step_learning * (y1 - Y[i + n]); //изменение порога нейронной сети
+			E += 0.5 * pow(y1 - Y[i + n], 2); //расчет суммарной среднеквадратичной ошибки
 		}
 	} while (E > Em);
-
-	cout << "РЕЗУЛЬТАТЫ ОБУЧЕНИЯ" << endl;
-	cout << setw(27) << left << "Эталонные значения" << setw(23) << left << "Полученные значения" << "Отклонение" << endl;
-	double* predicated_values = new double[n + predict];
-
-	for (int i = 0; i < n; i++) {
-		predicated_values[i] = 0;
-		for (int j = 0; j < en; j++) {
-			predicated_values[i] += W[j] * etalon[j + i ]; //получаемые значения в результате обучения
-		}
-		predicated_values[i] -= T;
-
-		cout << "y[" << i << "] = " << setw(20) << left << etalon[i] << setw(23) << left;
-		cout << predicated_values[i] << etalon[i] - predicated_values[i] << endl;
-	}
-
-	cout << endl << "РЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ" << endl;
-	cout << setw(28) << left << "Эталонные значения" << setw(23) << left << "Полученные значения" << "Отклонение" << endl;
-
-	for (int i = 0; i < predict; i++) {
-		predicated_values[i + n] = 0;
-		for (int j = 0; j < en; j++) {
-			//прогнозируемые значения
-			predicated_values[i + n] += W[j] * etalon[n - en + j + i];
-		}
-		predicated_values[i + n] += T;
-
-		cout << "y[" << n + i << "] = " << setw(20) << left << etalon[i + n] << setw(23) << left;
-		cout << predicated_values[i + n] << etalon[i + n] - predicated_values[i + n] << endl;
-	}
-
-	delete[]etalon;
-	delete[]predicated_values;
-	delete[]W;
+	print_result(n, T, Y, Num_Learning, N, Num_Predicted, W);
+	delete[] Y;
+	delete[] W;
 	return 0;
+}
+
+double function(int a, int b, double x, double d)
+{
+	return a * sin(b * x) + d;
+}
+
+void print_result(int n, double T, double* Y, int Num_Learning, int N, int Num_Predicted, double* W)
+{
+	cout << "РЕЗУЛЬТАТЫ:" << endl;
+	cout << "1) Обучение:" << endl;
+	cout << setw(30) << left << "Эталонные значения" << setw(38) << left << "Полученные значения" << "Отклонение" << endl;
+	double* predict = new double[N];
+	for (int i = 0; i < Num_Learning; i++) {
+		predict[i] = 0;
+		for (int j = 0; j < n; j++) {
+			predict[i] += W[j] * Y[j + i];
+		}
+		predict[i] -= T;
+		cout << "y[" << i << "] = " << setw(30) << left << Y[i + n] << setw(30) << left << predict[i] << pow(Y[i + n] - predict[i], 2) << endl;
+	}
+	cout << "2) Прогнозирование:" << endl;
+	cout << setw(30) << left << "Эталонные значения" << setw(38) << left << "Полученные значения" << "Отклонение" << endl;
+	for (int i = 0; i < Num_Predicted; i++) {
+		predict[i + Num_Learning] = 0;
+		for (int j = 0; j < n; j++) {
+			predict[i + Num_Learning] += W[j] * Y[i + j + Num_Learning - n];
+		}
+		predict[i + Num_Learning] -= T;
+		cout << "y[" << i + Num_Learning << "] = " << setw(30) << left << Y[i + Num_Learning] << setw(30) << left << predict[i + Num_Learning] << pow(Y[i + Num_Learning] - predict[i + Num_Learning], 2) << endl;
+	}
+	delete[] predict;
 }
