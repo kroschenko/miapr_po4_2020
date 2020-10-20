@@ -27,6 +27,7 @@ int main() {
 	}
 	double y1, //выходное значение нейронной сети
 		alpha = 0.3; //шаг обучения
+	int epoh = 0;
 	do {
 		E = 0;
 		for (int i = 0; i < n_learn - n; i++) {
@@ -44,7 +45,9 @@ int main() {
 			T += alpha * (y1 - Y[i + n]); //изменение порога нейронной сети
 			E += 0.5 * pow(y1 - Y[i + n], 2); //расчет суммарной среднеквадратичной ошибки
 		}
+		epoh++;
 	} while (E > Em);
+	cout << "Количество эпох: " << epoh;
 	print_result(n, T, Y, n_learn, N, n_predicted, W);
 	delete[] Y;
 	delete[] W;
