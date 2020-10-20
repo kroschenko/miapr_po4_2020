@@ -16,7 +16,7 @@ int main() {
 	system("color f0");
 	srand(time(0));
 	int a = 1, b = 8, n = 5, n_learn = 30, n_predicted = 15;
-	float d = 0.3, step = 0.1, x = 0, E, Ee = 0.0001, T = 1;
+	float d = 0.3, step = 0.1, x = 0, E, Ee = 0.01, T = 1;
 	float* W = new float[n];
 	for (int i = 0; i < n; i++) {
 		W[i] = rand() % 100 * 0.1;
@@ -33,6 +33,11 @@ int main() {
 			alpha = 0.3; //скорость обучения
 		E = 0;
 		for (int i = 0; i < n_learn - n; i++) {
+			double temp = 0;
+			for (int j = 0; j < n; j++) {
+				temp += pow(Y[i + j], 2);
+			}
+			alpha = 1 / (1 + temp); //адаптивный шаг
 			y1 = 0;
 
 			for (int j = 0; j < n; j++) { //векторы выходной активности сети
@@ -72,7 +77,7 @@ void print_result(int n, float T, float* Y, int n_learn, int N, int n_predicted,
 			prediction[i] += W[j] * Y[j + i];
 		}
 		prediction[i] -= T;
-		cout << "y[" << i << "] = " << setw(30) << left << Y[i+n] << setw(30) << left << prediction[i] << pow((Y[i+n] - prediction[i]),2) << endl;
+		cout << "y[" << i << "] = " << setw(30) << left << Y[i + n] << setw(30) << left << prediction[i] << pow((Y[i + n] - prediction[i]), 2) << endl;
 	}
 	cout << "2) Прогнозирование:" << endl;
 	cout << setw(30) << left << "Эталонные значения" << setw(30) << left << "Полученные значения" << "Отклонение" << endl;
@@ -82,8 +87,8 @@ void print_result(int n, float T, float* Y, int n_learn, int N, int n_predicted,
 			prediction[i + n_learn] += W[j] * Y[i + j + n_learn - n];
 		}
 		prediction[i + n_learn] -= T;
-		cout << "y[" << i + n_learn << "] = " << setw(30) << left << Y[i + n_learn] << setw(30) << left << prediction[i+n_learn] <<
-			pow((Y[i + n_learn] - prediction[i+n_learn]),2) << endl;
+		cout << "y[" << i + n_learn << "] = " << setw(30) << left << Y[i + n_learn] << setw(30) << left << prediction[i + n_learn] <<
+			pow((Y[i + n_learn] - prediction[i + n_learn]), 2) << endl;
 	}
 	delete[] prediction;
 }
