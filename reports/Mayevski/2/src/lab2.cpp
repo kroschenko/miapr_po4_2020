@@ -13,8 +13,8 @@ int main() {
 	SetConsoleOutputCP(1251);
 	system("color f0");
 	srand(time(0));
-	int a = 1, b = 9, n = 4, Num_Learning = 30, Num_Predicted = 15;
-	double d = 0.5, step = 0.1, x = 0, E, Em = 0.001, T = 1;
+	int a = 1, b = 5, n = 3, Num_Learning = 30, Num_Predicted = 15;
+	double d = 0.1, step = 0.1, x1 = 0, E, Em = 0.001, T = 1;
 	double* W = new double[n];
 	for (int i = 0; i < n; i++) {
 		W[i] = 1.0 / (double)rand();
@@ -22,15 +22,21 @@ int main() {
 	int N = Num_Learning + Num_Predicted;
 	double* Y = new double[N];
 	for (int i = 0; i < N; i++) {
-		x += step;
-		Y[i] = function(a, b, x, d);
+		x1 += step;
+		Y[i] = function(a, b, x1, d);
 	}
 	double y1, //выходное значение нейронной сети
-		step_learning = 0.3; //скорость обучения
+		step_learning; //скорость обучения
 	do {
 		E = 0;
 		for (int i = 0; i < Num_Learning - n; i++) {
 			y1 = 0;
+
+			double x2 = 0.0;
+			for (int j = 0; j < n; j++) {
+				x2 += pow(Y[i + j], 2);
+			}
+			step_learning = 1 / (1 + x2); //адаптивный шаг
 
 			for (int j = 0; j < n; j++) { //векторы выходной активности сети
 				y1 += W[j] * Y[i + j];
