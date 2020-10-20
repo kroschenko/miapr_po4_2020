@@ -13,7 +13,7 @@ int main() {
 	SetConsoleOutputCP(1251);
 	system("color f0");
 	srand(time(0));
-	int a = 4, b = 7, n = 5, n_learn = 30, n_predicted = 15;
+	int a = 4, b = 7, n = 4, n_learn = 30, n_predicted = 15;
 	double d = 0.2, step = 0.1, x1 = 0, E, Em = 0.001, T = 1;
 	double* W = new double[n];
 	for (int i = 0; i < n; i++) {
@@ -27,6 +27,7 @@ int main() {
 	}
 	double y1, //выходное значение нейронной сети
 		alpha; //скорость обучения
+	int ipoha = 0;
 	do {
 		E = 0;
 		for (int i = 0; i < n_learn - n; i++) {
@@ -50,7 +51,9 @@ int main() {
 			T += alpha * (y1 - Y[i + n]); //изменение порога нейронной сети
 			E += 0.5 * pow(y1 - Y[i + n], 2); //расчет суммарной среднеквадратичной ошибки
 		}
+		ipoha++;
 	} while (E > Em);
+	cout << "эпох = " << ipoha << endl;
 	print_result(n, T, Y, n_learn, N, n_predicted, W);
 	delete[] Y;
 	delete[] W;
@@ -87,4 +90,5 @@ void print_result(int n, double T, double* Y, int n_learn, int N, int n_predicte
 		cout << "y[" << i + n_learn << "] = " << setw(30) << left << Y[i + n_learn] << setw(30) << left << prediction[i + n_learn] << pow(Y[i + n_learn] - prediction[i + n_learn], 2) << endl;
 	}
 	delete[] prediction;
+	
 }

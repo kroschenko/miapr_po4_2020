@@ -10,8 +10,8 @@ a = 4
 b = 7
 d = 0.2
 
-inputs = 5
-Em = 1e-8
+inputs = 4
+Em = 1e-3
 step = 0.1
 alpha = 0.1
 
