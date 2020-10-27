@@ -83,7 +83,6 @@ int main() {
 		cout  << "y[" << i + 1 << "] = " << setw(20) << right << etalon_values[i + enteries] <<  setw(23) << right;
 		cout << prognoz_values[i] << setw(23) << right <<  etalon_values[i + enteries] - prognoz_values[i] << endl;
 	}
-
 	cout << endl << "РЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ" << endl;
 	cout << setw(28) << right << "Эталонные значения" << setw(23) << right << "Полученные значения" << setw(23) << right << "Отклонение" << endl;
 
