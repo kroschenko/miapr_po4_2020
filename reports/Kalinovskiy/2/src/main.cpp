@@ -39,7 +39,11 @@ int main() {
 
 		for (int i = 0; i < N - enter; i++) {
 			y1 = 0;
-
+			double temp = 0.0;
+			for (int j = 0; j < enter; j++) {
+				temp += pow(ref_values[i + j], 2);
+			}
+			A = 1 / (1 + temp); //адаптивный шаг
 			for (int j = 0; j < enter; j++) { //векторы выходной активности сети
 				y1 += W[j] * ref_values[j + i];
 			}
@@ -52,11 +56,6 @@ int main() {
 			T += A * (y1 - ref_values[i + enter]); //изменение порога нейронной сети
 			E += 0.5 * pow(y1 - ref_values[i + enter], 2); //расчет суммарной среднеквадратичной ошибки
 			count++;
-			double temp = 0.0;
-			for (int j = 0; j < enter; j++) {
-				temp += pow(ref_values[i + j], 2);
-			}
-			A = 1 / (1 + temp); //адаптивный шаг
 		}
 
 		cout << count << " | " << E << endl;
