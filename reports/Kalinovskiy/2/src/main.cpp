@@ -74,8 +74,7 @@ int main() {
 			predict_values[i] += W[j] * ref_values[j + i]; //получаемые значения в результате обучения
 		}
 		predict_values[i] -= T;
-
-		cout << "y[" << i + 1 << "] = " << setw(20) << right << ref_values[i + enter] << setw(23) << right;
+        cout << "y[" << i + 1 << "] = " << setw(20) << right << ref_values[i + enter] << setw(23) << right;
 		cout << predict_values[i] << setw(23) << right << ref_values[i + enter] - predict_values[i] << endl;
 	}
 
