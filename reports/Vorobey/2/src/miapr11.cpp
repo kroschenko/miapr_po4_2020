@@ -41,6 +41,13 @@ int main() {
 		for (int i = 0; i < n - enteries; i++) {
 			y1 = 0;
 
+            double temp = 0.0;
+			for (int j = 0; j < enteries; j++) {
+				temp += pow(etalon_values[i + j], 2);
+			}
+			Alpha = 1 / (1 + temp); //адаптивный шаг
+
+
 			for (int j = 0; j < enteries; j++) { //векторы выходной активности сети
 				y1 += W[j] * etalon_values[j + i];
 			}
@@ -53,11 +60,6 @@ int main() {
 			T += Alpha * (y1 - etalon_values[i + enteries]); //изменение порога нейронной сети
 			E += 0.5 * pow(y1 - etalon_values[i + enteries], 2); //расчет суммарной среднеквадратичной ошибки
 
-			double temp = 0.0;
-			for (int j = 0; j < enteries; j++) {
-				temp += pow(etalon_values[i + j], 2);
-			}
-			Alpha = 1 / (1 + temp); //адаптивный шаг
 			era++;
 		}
 		
