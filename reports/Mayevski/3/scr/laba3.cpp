@@ -82,32 +82,3 @@ int main()
 	}
 	system("pause");
 }
-
-
-
-
-//#include "iostream"
-//
-//using namespace std;
-//
-//int main() {
-//	double weight1, weight2;
-//	int a = 0.2, b = 0.1, c = 0.05, d = 0.6, n_entiries = 10;
-//	int n_hiden_layer = 4;
-//	int Em = 0.0001;
-//	int learning_step = 0.1;
-//	//y = a*cos(bx)+c*sin(dx)
-//	double entiries_weight[10];
-//	double hiden_entiries[4];
-//	for (int i = 0; i < 10; i++) {
-//		entiries_weight[i] = 1/rand() %10;
-//	}
-//
-//
-//	for (int i = 0; i < 4; i++) {
-//		hiden_entiries[i] = 1 / rand() % 10;
-//	}
-//
-//
-//	return 0;
-//}
