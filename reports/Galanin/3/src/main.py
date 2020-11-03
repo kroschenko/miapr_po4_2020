@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from etalons import get_etalons
 from sigm import SigmFunc
 from sigm import dSigmFunc
+from bipolarSigmoid import BiSigmFunc
+from bipolarSigmoid import dBiSigmFunc
 
 L = 8 # Количество входов ИНС
 Lhid = 3 # Количество НЭ скрытого слоя
@@ -46,9 +48,10 @@ while 1:
         #print('S = x * w - T =\n%s\n' % S)
 
         for i in range(Lhid):
-            S[i] = SigmFunc(S[i]) # [sigm(S1), sigm(S2), ..., sigm(SLhid)]
+            #S[i] = SigmFunc(S[i]) # [SigmFunc(S1), ..., SigmFunc(SLhid)]
+            S[i] = BiSigmFunc(S[i]) # [BiSigmFunc(S1), ..., BiSigmFunc(SLhid)]
         y = S
-        print('y = [sigm(S1), ..., sigm(SLhid)] =\n%s\n' % y)
+        #print('y = [func(S1), ..., func(SLhid)] =\n%s\n' % y)
 
         Y = y.dot(ws) - Ts # Y = [y] * [ws] - [Ts]
         #print('Y = [y] * [ws] - [Ts] =\n%s\n' % Y)
@@ -68,11 +71,13 @@ while 1:
 
         for i in range(L):
             for j in range(Lhid):
-                w[i][j] -= alpha * gamma_s[j] * dSigmFunc(y[j]) * y[j]
+                #w[i][j] -= alpha * gamma_s[j] * dSigmFunc(y[j]) * y[j]
+                w[i][j] -= alpha * gamma_s[j] * dBiSigmFunc(y[j]) * y[j]
         #print('w = w - a * j * y * (1-y) * y =\n%s\n' % w)
 
         for i in range(Lhid):
-            T[i] += alpha * gamma_s[i] * dSigmFunc(y[j]) 
+            #T[i] += alpha * gamma_s[i] * dSigmFunc(y[j])
+            T[i] += alpha * gamma_s[i] * dBiSigmFunc(y[j]) 
         #print('T = T + alpha * j * y * (1-y) =\n%s\n' % T)
 
         E = 0.5 * (Y - e[k]) ** 2
