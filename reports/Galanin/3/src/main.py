@@ -3,7 +3,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from etalons import get_etalons
-from sigm import sigm
+from sigm import SigmFunc
+from sigm import dSigmFunc
 
 L = 8 # Количество входов ИНС
 Lhid = 3 # Количество НЭ скрытого слоя
@@ -45,7 +46,7 @@ while 1:
         #print('S = x * w - T =\n%s\n' % S)
 
         for i in range(Lhid):
-            S[i] = sigm(S[i]) # [sigm(S1), sigm(S2), ..., sigm(SLhid)]
+            S[i] = SigmFunc(S[i]) # [sigm(S1), sigm(S2), ..., sigm(SLhid)]
         y = S
         print('y = [sigm(S1), ..., sigm(SLhid)] =\n%s\n' % y)
 
@@ -67,11 +68,11 @@ while 1:
 
         for i in range(L):
             for j in range(Lhid):
-                w[i][j] -= alpha * gamma_s[j] * y[j] * (1 - y[j]) * y[j]
+                w[i][j] -= alpha * gamma_s[j] * dSigmFunc(y[j]) * y[j]
         #print('w = w - a * j * y * (1-y) * y =\n%s\n' % w)
 
         for i in range(Lhid):
-            T[i] += alpha * gamma_s[i] * y[i] * (1 - y[i])
+            T[i] += alpha * gamma_s[i] * dSigmFunc(y[j]) 
         #print('T = T + alpha * j * y * (1-y) =\n%s\n' % T)
 
         E = 0.5 * (Y - e[k]) ** 2
