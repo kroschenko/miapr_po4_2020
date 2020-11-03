@@ -1,6 +1,7 @@
 import random
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 from etalons import get_etalons
 from sigm import sigm
 
@@ -35,7 +36,10 @@ for i in range(L):
 print('x =\n%s\n' % x)
 print('w =\n%s\n' % w)
 
-for qqq in range(5):
+eras = 0
+valueXforGraph = []
+valueYforGraph = []
+while 1:
     S = x.dot(w) - T # S = [x] * [w] - [T] 
     print('S = x * w - T =\n%s\n' % S)
 
@@ -71,3 +75,17 @@ for qqq in range(5):
 
     E = 0.5 * (Y - e[0]) ** 2
     print('E = %s' % E)
+
+    eras += 1
+
+    valueXforGraph.append(eras)
+    valueYforGraph.append(E)
+
+    if E < Ee:
+        break
+
+plt.plot(valueXforGraph, valueYforGraph, 'Db', label="E")
+
+plt.title("Error change graph") # Python write title in graph
+plt.legend() # Python write legend in graph
+plt.show() # Python open new windows and show graph
