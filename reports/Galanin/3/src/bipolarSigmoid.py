@@ -5,5 +5,5 @@ def BiSigmFunc(S):
     return y
 
 def dBiSigmFunc(y):
-    dy = y * (1 - y)
+    dy = 2 * (1 - y) * y
     return dy
