@@ -1,138 +1,109 @@
-import math
-import random
+import numpy as np
+#import sys
 
 def func(x):
-    a = 0.2
-    b = 0.6
-    c = 0.05
-    d = 0.6
-    return a * math.cos(b * x) + c * math.sin(d * x)
+    a, b, c, d, step = 0.2, 0.6, 0.05, 0.6, 0.1
+    return a * np.cos(b * x * step) + c * np.sin(d * x * step)
 
-def sigmoid(x):
-    e = 2.718
-    return 1 / (1 + e ** (-x))
+def activation(x):
+    return np.tanh(x)
+    #e = 2.718
+    #return 1 / (1 + e ** (-x))
+    #return 1 / (1 + np.exp(-x))
 
 def derivative(x):
-    return x * (1 - x)
+    return 1 - (activation(x) ** 2)
+    #return -((activation(x) ** 2) - 1)
+    #return x * (1 - x)
 
-n_in = 10  #количество входов
-n_el = 4   #количество элементов скрытого слоя
-n_ob = 30  #размер выборки для обучения
-n_pr = 15  #размер выборки для прогназированния
-alpha = 0.1 #скорость обучения
-Em = 1e-6  #минимальная ошибка
+def error(y,Y):
+    return np.mean((y - Y) ** 2)
 
-Err   = [0 for i in range(n_ob - n_in)]
-E_hid = [] #ошибка скрытого слоя
-F_hid = [] #функция активности скрытого слоя
-Y_hid = [] #выходная активность скрытого слоя, выходного слоя
-T_hid = [] #пороговые значение скрытого слоя, выходного слоя
-W_hid = [[0] * n_el for i in range(n_in)] #весовые коэффициенты скрытого слоя
-W_out = [] #весовые коэффициенты выходного слоя
-Y_out = 0.0
+def training(inputs,predict,weights_hidden,weights_input):
+    learning_rate = 0.5 # скорость обучения
 
-t = []; #массив эталонных значений
-y = [];  #массив обучаемых значений
-z = [];  #массив прогнозируемых значений
+    inputs_hidden  = np.dot(weights_hidden,inputs)
+    outputs_hidden = activation_mapper(inputs_hidden)
 
-for i in range(n_pr + n_ob + n_in):
-    t.append(func(i * 0.1))
+    inputs_input  = np.dot(weights_input,outputs_hidden)
+    outputs_input = activation(inputs_input)
 
-T_out = random.uniform(-0.1, 0.1)
+    error_input    = np.array([outputs_input[0] - predict])
+    gradient_input = derivative(outputs_input[0])
+    delta_input    = error_input * gradient_input    
+    weights_input -= learning_rate * np.dot(delta_input,outputs_hidden.reshape(1,len(outputs_hidden)))
 
-print("Случайно заданные весовые коэффициенты: ")
-for j in range(n_el):
-    Y_hid.append(0)
-    F_hid.append(0)
-    for i in range(n_in):
-        W_hid[i][j] = round(random.uniform(-0.1, 0.1), 2)
-    W_out.append(round(random.uniform(-0.1, 0.1), 2))
-    T_hid.append(round(random.uniform(-0.1, 0.1), 2))
+    error_hidden    = delta_input * weights_input
+    gradient_hidden = derivative(outputs_hidden)
+    delta_hidden    = error_hidden * gradient_hidden
+    weights_hidden -= learning_rate * np.dot(inputs.reshape(len(inputs),1),delta_hidden).T
 
-print(W_hid)
-print("\n")
+    return weights_hidden,weights_input
 
-count = 0
+def prediction(inputs,weights_hidden,weights_input):
+    inputs_hidden  = np.dot(weights_hidden,inputs)
+    outputs_hidden = activation_mapper(inputs_hidden)
+
+    inputs_input  = np.dot(weights_input,outputs_hidden)
+    outputs_input = activation(inputs_input)
+
+    return outputs_input
+
+activation_mapper = np.vectorize(activation)
+
+learning      = []
+predictions   = []
+epoch         = 0
+epoch_maximum = 1000
+error_minimum = 1e-5  # минимальная ошибка
+n_input       = 10    # количество входов
+n_hidden      = 4     # количество элементов скрытого слоя
+n_train       = 30    # размер выборки для обучения
+n_predict     = 15    # размер выборки для прогназированния
+param         = 0
+w_hidden      = np.random.normal(0.0,2 ** -0.5,(n_hidden,n_input))
+w_input       = np.random.normal(0.0,1,(1,n_hidden))
+#w_hidden      = np.random.normal(0.0,0.1,(n_hidden,n_input))
+#w_input       = np.random.normal(0.0,0.1,(1,n_hidden))
+
+for i in range(n_train):
+    inp, com = [], []
+    for j in range(n_input):
+        inp.append(func(param))
+        param += 1
+    com.append(inp)
+    com.append(func(param))
+    learning.append(tuple(com))
+
 while True:
-    count += 1
-    E = 0.0
-    for k in range(n_ob - n_in):
-        Y_out = 0.0
-        for i in range(n_el):
-            for j in range(n_in):
-                Y_hid[i] += W_hid[j][i] * t[k + j]
-            Y_hid[i] -= T_hid[i]
-            F_hid[i]  = sigmoid(Y_hid[i])
-            Y_hid[i]  = 0.0
-            Y_out    += F_hid[i] * W_out[i]
-        Y_out -= T_out;
-        Err[k] = Y_out - t[k];
-        T_out += alpha * Err[k];
-        for i in range(n_el):
-            W_out[i] -= alpha * Err[k] * F_hid[i]
-        for i in range(n_el):
-            deriv = derivative(F_hid[i])
-            for j in range(n_in):
-                W_hid[j][i] -= alpha * Err[k] * deriv * W_out[i] * t[k + j]
-            T_hid[i] += alpha * Err[k] * deriv * W_out[i]
-        E += 0.5 * Err[k] ** 2
-    #print(E," ",Em)
-    if E < Em:
+    inputs, predicts = [], []
+    for sample,predict in learning:
+        w_hidden,w_input = training(np.array(sample),predict,w_hidden,w_input)
+        inputs.append(np.array(sample))
+        predicts.append(np.array(predict))
+    error_learning = error(prediction(np.array(inputs).T,w_hidden,w_input),np.array(predicts))
+    epoch         += 1
+    #sys.stdout.write("\rОшибка: {}, Эпохи: {}".format(str(error_learning),str(epoch)))
+    if error_learning <= error_minimum or epoch > epoch_maximum:
         break
 
-print("Эпохи: ", count)
-print("Ошибка", E)
+print("Ошибка: {}, Эпохи: {}".format(str(error_learning),str(epoch)))
 
-#Обучение
-print("Результаты обучения:")
-print(" %2s %2s %2s %2s " % (
-        "y[]",
-        "Эталонное значение",
-        "Полученное значение",
-        "Отклонение"
-    ))
+for i in range(n_train,n_train + n_predict):
+    inp, com = [], []
+    for j in range(n_input):
+        inp.append(func(param))
+        param += 1
+    com.append(inp)
+    com.append(func(param))
+    predictions.append(tuple(com))
 
-for k in range(n_ob):
-    y.append(0)
-    for i in range(n_el):
-        for j in range(n_in):
-            y[k] += W_hid[j][i] * t[k + j]
-        Y_hid[i] -= T_hid[i];
-        F_hid[i]  = sigmoid(Y_hid[i]); #функция активации
-        Y_hid[i]  = 0;
-        y[k]     += F_hid[i] * W_out[i];
-    y[k] -= T_out
+print("\nРЕЗУЛЬТАТЫ ОБУЧЕНИЯ:")
+for sample,predict in learning:
+    output = prediction(sample,w_hidden,w_input)
+    print("прогноз: {:<20} ожидаемый: {:<30} погрешность: {:<20}".format(str(output),str(np.array(predict)),str(output - predict)))
 
-    print(" %2d %9lf %18lf %19lf " % (
-        k,
-        t[k],
-        y[k],
-        t[k] - y[k]
-    ))
-
-#Прогнозированние
-print("Результаты прогнозирования:")
-print(" %2s %2s %2s %2s " % (
-        "y[]",
-        "Эталонное значение",
-        "Полученное значение",
-        "Отклонение"
-    ))
-
-for k in range(n_pr):
-    z.append(0)
-    for i in range(n_el):
-        for j in range(n_in):
-            Y_hid[i] += W_hid[j][i] * t[k + n_ob + j]
-        Y_hid[i] -= T_hid[i];
-        F_hid[i]  = sigmoid(Y_hid[i]); # функция активации
-        Y_hid[i]  = 0;
-        z[k]     += F_hid[i] * W_out[i];
-    z[k] -= T_out
-
-    print(" %2d %9lf %18lf %19lf " % (
-            k + n_ob,
-            t[k],
-            z[k],
-            t[k] - z[k]
-        ))
+print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ:")
+for sample,predict in predictions:
+    output = prediction(sample,w_hidden,w_input)
+    print("прогноз: {:<20} ожидаемый: {:<30} погрешность: {:<20}".format(str(output),str(np.array(predict)),str(output - predict)))
