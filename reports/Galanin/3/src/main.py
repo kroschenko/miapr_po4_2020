@@ -81,7 +81,7 @@ class lab():
         valueXforGraph = []
         valueYforGraph = []
         while 1:
-            for k in range(30 - Lhid - L):
+            for k in range(30 - L):
                 x = np.zeros(L)
                 for i in range(L):
                     x[i] = e[i + k]
