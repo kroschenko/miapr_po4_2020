@@ -142,19 +142,19 @@ class lab():
         plt.plot(valueXforGraph, valueYforGraph, graphMark, label=graphLabel)
 
 obj = lab(
-    0.1,    #a для функции y = acos(bx) + bsin(dx)
-    0.5,    #b для функции y = acos(bx) + bsin(dx)
-    0.09,   #c для функции y = acos(bx) + bsin(dx)
-    0.5,    #d для функции y = acos(bx) + bsin(dx)
-    0.1,    # step для функции y = acos(bx) + bsin(dx)
+    0.1,    #a      для функции y = a cos(b x) + c sin(d x)
+    0.5,    #b      для функции y = a cos(b x) + c sin(d x)
+    0.09,   #c      для функции y = a cos(b x) + c sin(d x)
+    0.5,    #d      для функции y = a cos(b x) + c sin(d x)
+    0.1,    #step   для функции y = a cos(b x) + b sin(d x)
     8,      #L - количество входов ИНС
     3,      #Lhid - количество НЭ в скрытом слое
-    0.5,    #alpha - скорость обучения
+    0.2,    #alpha - скорость обучения
     1e-7    #Ee - средняя квадратичная ошибка, до которой мы хотим очучить сеть
 )
-obj.alg(3, 'dr', 'Sigmoid function')
-obj.alg(2, 'hy', 'Bipolar sigmoid function')
-obj.alg(1, 'Hb', 'Hyperbolic tangent function')
+obj.alg(1, 'd-r', 'Sigmoid function')
+obj.alg(2, 'h-y', 'Bipolar sigmoid function')
+obj.alg(3, 'H-b', 'Hyperbolic tangent function')
 
 plt.title("Error change graph") # Python write title in graph
 plt.legend() # Python write legend in graph
