@@ -33,11 +33,18 @@ int main() {
     }
 
     double y, // вых зн ИНС
-           V = 0.0003; // скорость
+           V; // скорость
     do {
         sum_error = 0;
         for (int i = 0; i < n_obychenie - inputs_number; i++) {
             y = 0;
+
+            double t = 0.0;
+            for (int j = 0; j < inputs_number; j++) {
+                t += pow(etalon[i + j], 2);
+            }
+            V = 1 / (1 + t); // адаптивный шаг
+
             for (int j = 0; j < inputs_number; j++) {
                 y += w[j] * etalon[i + j];
             }
@@ -46,13 +53,7 @@ int main() {
                 w[j] -= V * (y - etalon[i + inputs_number]) * etalon[i + j];
             }
             sum_error += 0.5 * pow((y - etalon[i + inputs_number]), 2);
-            T += V * (y - etalon[i + inputs_number]);
-            
-            double t = 0.0;
-            for (int j = 0; j < inputs_number; j++) {
-                t += pow(etalon[i + j], 2);
-            }
-            V = 1 / (1 + t); // адаптивный шаг
+            T += V * (y - etalon[i + inputs_number]);     
         }
         era++;
     } while (sum_error > min_error);
