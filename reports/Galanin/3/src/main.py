@@ -1,161 +1,188 @@
-import numpy as np
+import numpy
+from math import sin
+from math import cos
 import random
-import math
-import matplotlib.pyplot as plt
+import matplotlib.pyplot
 
-class lab():
-    def __init__(self, a, b, c, d, step, L, Lhid, alpha, Ee):
-        self.a = a
-        self.b = b
-        self.c = c
-        self.d = d
-        self.step = step
-        self.L = L
-        self.Lhid = Lhid
-        self.alpha = alpha
-        self.Ee = Ee
-
-    def generate_etalons(self):
-        a = self.a
-        b = self.b
-        c = self.c
-        d = self.d
-        step = self.step
-        number = 30
-
-        etalons = np.zeros(number)
-        for i in range(number):
-            x = i * step
-            y = a * math.cos(b * x) + c * math.sin(d * x)
+# Функция принимает параметры:
+# m1 - number neurons for learning
+# m2 - number neurons for test
+# a - parametr for etalon function
+# b - parametr for etalon function
+# c - parametr for etalon function
+# d - parametr for etalon function
+# step - parametr for etalon function
+# inputs - number neurons
+# hiddens - number neurons
+# outputs - number neurons
+# Ee - desired squared error
+# alpha - learning rate
+def lab(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha):
+    # Функция возвращает массив с эталонными значениями
+    def get_etalons(n):
+        etalons = numpy.zeros(n)
+        for i in range(len(etalons)):
+            x = step * i
+            y = a * cos(b * x) + c * sin(d * x)
             etalons[i] = y
         return etalons
 
-    def SigmFunc(self, S):
-        y = 1 / (1 + math.exp(-S))
-        return y
+    etalons = get_etalons(m1 + m2)
+    #print(etalons)
 
-    def dSigmFunc(self, y):
-        dy = y * (1 - y)
-        return dy
+    # Функция возвращает массив с весами
+    # Например, 8 нейронов в входном слое и 3 в скрытом, тогда возвратит массив 8х3
+    # Например, 3 нейрона в скрытом слое и 1 нейрон в выходном слое, тогда возвратит массив 3х1
+    def get_weights(leftNumberNeurons, rightNumberNeurons, leftRandomBorder, rightRandomBorder):
+        weights = numpy.zeros((leftNumberNeurons, rightNumberNeurons))
+        for i in range(leftNumberNeurons):
+            for j in range(rightNumberNeurons):
+                weights[i][j] = random.uniform(leftRandomBorder, rightRandomBorder)
+        return weights
 
-    def BiSigmFunc(self, S):
-        y = 2 / (1 + math.exp(-S)) - 1
-        return y
+    weights_ki = get_weights(inputs, hiddens, -1, 1)
+    #print(weights_ki)
 
-    def dBiSigmFunc(self, y):
-        dy = 2 * (1 - y) * y
-        return dy
+    weights_ij = get_weights(hiddens, outputs, -1, 1)
+    #print(weights_ij)
 
-    def HyperbolicTangent(self, S):
-        y = (math.exp(S) - math.exp(-S)) / (math.exp(S) + math.exp(-S))
-        return y
+    # Функция возвращает массив с порогами
+    # Например, 8 нейронов в входном слое и 3 в скрытом, тогда возвратит массив размером 3
+    # Например, 3 нейрона в скрытом слое и 1 нейрон в выходном слое, тогда возвратит массив размером 1
+    def get_thresholds(numberNeurons, leftRandomBorder, rightRandomBorder):
+        tresholds = numpy.zeros(numberNeurons)
+        for i in range(numberNeurons):
+            tresholds[i] = random.uniform(leftRandomBorder, rightRandomBorder)
+        return tresholds
 
-    def dHyperbolicTangent(self, y):
-        y = 1 - y ** 2
-        return y
+    tresholds_i = get_thresholds(hiddens, -1, 1)
+    #print(tresholds_i)
 
-    def alg(self, funcCase, graphMark, graphLabel):
-        e = self.generate_etalons()
-        L = self.L
-        Lhid = self.Lhid
-        alpha = self.alpha
-        Ee = self.Ee
+    tresholds_j = get_thresholds(outputs, -1, 1)
+    #print(tresholds_j)
 
-        # массив размером [L x Lhid] для весов от входа к скрытому слою
-        w = np.zeros((L, Lhid)) 
-        for i in range(L):
-            for j in range(Lhid):
-                w[i][j] = random.uniform(0, 0.5)
-        # массив размером [Lhid x 1] для весов от скрытого слоя к выходу
-        ws = np.zeros(Lhid) 
-        for i in range(Lhid):
-            ws[i] = random.uniform(0, 0.5)
-        # пороги от входов к срытому слою
-        T = np.zeros(Lhid) 
-        for i in range(Lhid):
-            T[i] = random.uniform(0, 0.5)
-        # порог от скрытого слоя к выходу
-        Ts = random.uniform(0, 0.5) 
-        # цикл
-        eras = 0
-        valueXforGraph = []
-        valueYforGraph = []
-        while 1:
-            for k in range(30 - L):
-                x = np.zeros(L)
-                for i in range(L):
-                    x[i] = e[i + k]
-                # S = [x] * [w] - [T]
-                S = x.dot(w) - T  
+    valuesXforGraph = []
+    valuesYforGraph = []
+    eras = 0
+    while 1:
+        for q in range(m1 - inputs):
+            # Si = x * wki - Ti
+            x = etalons[q:(q+inputs)]
+            S_i = x.dot(weights_ki) - tresholds_i
+            #print(S_i)
+            # yi = Sigm(Si)
+            y_i = numpy.zeros(len(S_i))
+            for i in range(len(S_i)):
+                y_i[i] = 1. / (1. + numpy.exp( - S_i[i] )) # sigmoid func
+            #print(y_i)
+            # Sj = yi * wij - Tj
+            S_j = y_i.dot(weights_ij) - tresholds_j
+            #print(S_j)
+            # yj = Linear(Sj) = Sj
+            y_j = S_j
+            #print(y_j)
+            # jj = yj - e
+            j_j = numpy.array([ y_j[i] - etalons[q + inputs + i] for i in range(len(y_j)) ])
+            #print(j_j)
+            # ji = sum [dF(Sj) * wij]
+            dF_j = 1
+            j_i = numpy.zeros(hiddens)
+            for i in range(hiddens):
+                for j in range(outputs):
+                    j_i[i] += j_j[j] * dF_j * weights_ij[i][j]
+            #print(j_i)
+            # wij = wij - alpha * jj * dFj * yi
+            for i in range(hiddens):
+                for j in range(outputs):
+                    weights_ij[i][j] -= alpha * j_j[j] * dF_j * y_j[j]
+            #print(weights_ij)
+            # Tj = Tj + alpha * jj * dFj
+            for j in range(outputs):
+                tresholds_j += alpha * j_j[j] * dF_j
+            #print(tresholds_j)
+            # wki = wki - alpha * ji * dFi * yi
+            for k in range(inputs):
+                for i in range(hiddens):
+                    dFi = y_i[i] * (1 - y_i[i]) # derivative sigmoid func
+                    weights_ki[k][i] -= alpha * j_i[i] * dFi * y_i[i]
+            #print(weights_ki)
+            # Ti = Ti + alpha * ji * dFi
+            for i in range(hiddens):
+                dFi = y_i[i] * (1 - y_i[i]) # derivative sigmoid func
+                tresholds_i += alpha * j_i[i] * dFi
+            #print(tresholds_i)
+        E = 0
+        for j in range(outputs):
+            E += 1./2 * (y_j[j] - etalons[q + inputs + j]) ** 2
+        valuesXforGraph.append(E)
+        eras += 1
+        valuesYforGraph.append(eras)
+        print('eras: %8d\tE: %32.20f\r' % (eras, E), end = '')
+        if E < Ee:
+            print()
+            matplotlib.pyplot.plot(valuesYforGraph, valuesXforGraph, 'g-o')
+            matplotlib.pyplot.title('E(eras)')
+            break
 
-                for i in range(Lhid):
-                    # [SigmFunc(S1), ..., SigmFunc(SLhid)]
-                    if funcCase == 1:
-                        S[i] = self.SigmFunc(S[i]) 
-                    elif funcCase == 2:
-                        S[i] = self.BiSigmFunc(S[i])
-                    else:
-                        S[i] = self.HyperbolicTangent(S[i]) 
-                y = S
+    print('after learning:')
+    for q in range(m1):
+        # Si = x * wki - Ti
+        x = etalons[q:(q+inputs)]
+        S_i = x.dot(weights_ki) - tresholds_i
+        #print(S_i)
+        # yi = Sigm(Si)
+        y_i = numpy.zeros(len(S_i))
+        for i in range(len(S_i)):
+            y_i[i] = 1. / (1. + numpy.exp( - S_i[i] )) # sigmoid func
+        #print(y_i)
+        # Sj = yi * wij - Tj
+        S_j = y_i.dot(weights_ij) - tresholds_j
+        #print(S_j)
+        # yj = Linear(Sj) = Sj
+        y_j = S_j
+        print('%8d\t%24.20f\t%24.20f\t%24.20f' % (
+            q,
+            etalons[q + inputs],
+            y_j,
+            (etalons[q + inputs] - y_j) ** 2)
+        )
 
-                # Y = [y] * [ws] - [Ts]
-                Y = y.dot(ws) - Ts 
+    print('test:')
+    for q in range(m2 - inputs):
+        # Si = x * wki - Ti
+        x = etalons[(q + m1):(q + inputs + m1)]
+        S_i = x.dot(weights_ki) - tresholds_i
+        #print(S_i)
+        # yi = Sigm(Si)
+        y_i = numpy.zeros(len(S_i))
+        for i in range(len(S_i)):
+            y_i[i] = 1. / (1. + numpy.exp( - S_i[i] )) # sigmoid func
+        #print(y_i)
+        # Sj = yi * wij - Tj
+        S_j = y_i.dot(weights_ij) - tresholds_j
+        #print(S_j)
+        # yj = Linear(Sj) = Sj
+        y_j = S_j
+        print('%8d\t%24.20f\t%24.20f\t%24.20f' % (
+            q + m1,
+            etalons[q + m1 + inputs],
+            y_j,
+            (etalons[q + m1 + inputs] - y_j) ** 2)
+        )
 
-                gamma = Y - e[k]
+    matplotlib.pyplot.show()
 
-                # [ws] = [ws] - a * j * 1 * Y
-                ws = ws - alpha * gamma * 1 * y 
-
-                # [Ts] = [Ts] + a * j * 1
-                Ts = Ts + alpha * gamma * 1 
-
-                gamma_s = np.zeros(Lhid)
-                for i in range(Lhid):
-                    gamma_s[i] = y[i] - e[k + i]
-
-                for i in range(L):
-                    for j in range(Lhid):
-                        if funcCase == 1:
-                            w[i][j] -= alpha * gamma_s[j] * self.dSigmFunc(y[j]) * y[j]
-                        elif funcCase == 2:
-                            w[i][j] -= alpha * gamma_s[j] * self.BiSigmFunc(y[j]) * y[j]
-                        else:
-                            w[i][j] -= alpha * gamma_s[j] * self.HyperbolicTangent(y[j]) * y[j]
-
-                for i in range(Lhid):
-                    if funcCase == 1:
-                        T[i] += alpha * gamma_s[i] * self.dSigmFunc(y[j])
-                    elif funcCase == 2:
-                        T[i] += alpha * gamma_s[i] * self.BiSigmFunc(y[j])
-                    else:
-                        T[i] += alpha * gamma_s[i] * self.HyperbolicTangent(y[j])
- 
-                E = 0.5 * (Y - e[k]) ** 2
-
-            eras += 1
-            valueXforGraph.append(eras)
-            valueYforGraph.append(E)
-            print('\r%10d %32.20f' % (eras, E), end = '')
-            if E < Ee:
-                break
-        print()
-        plt.plot(valueXforGraph, valueYforGraph, graphMark, label=graphLabel)
-
-obj = lab(
-    0.1,    #a      для функции y = a cos(b x) + c sin(d x)
-    0.5,    #b      для функции y = a cos(b x) + c sin(d x)
-    0.09,   #c      для функции y = a cos(b x) + c sin(d x)
-    0.5,    #d      для функции y = a cos(b x) + c sin(d x)
-    0.1,    #step   для функции y = a cos(b x) + b sin(d x)
-    8,      #L - количество входов ИНС
-    3,      #Lhid - количество НЭ в скрытом слое
-    0.01,    #alpha - скорость обучения
-    1e-6    #Ee - средняя квадратичная ошибка, до которой мы хотим очучить сеть
+lab(
+    30,     # m1 - number neurons for learning
+    40,     # m2 - number neurons for test
+    0.1,    # a - parametr for etalon function
+    0.5,    # b - parametr for etalon function
+    0.09,   # c - parametr for etalon function
+    0.5,    # d - parametr for etalon function
+    0.001,   # step - parametr for etalon function
+    8,      # inputs - number neurons
+    3,      # hiddens - number neurons
+    1,      # outputs - number neurons
+    1e-8,   # Ee - desired squared error
+    0.001    # alpha - learning rate
 )
-obj.alg(1, 'd-r', 'Sigmoid function')
-obj.alg(2, 'h-y', 'Bipolar sigmoid function')
-obj.alg(3, 'H-b', 'Hyperbolic tangent function')
-
-plt.title("Error change graph") # Python write title in graph
-plt.legend() # Python write legend in graph
-plt.show() # Python open new windows and show graph
