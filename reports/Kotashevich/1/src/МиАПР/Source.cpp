@@ -26,7 +26,7 @@ int main() {
 		Y[i] = function(a, b, x, d);
 	}
 	double y1, //выходное значение нейронной сети
-		alpha = 0.3; //шаг обучения
+		alpha = 0.5; //шаг обучения
 	int epoh = 0;
 	do {
 		E = 0;
