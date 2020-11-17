@@ -40,6 +40,7 @@ double output(double x, double w1[4][10], double w2[4], double T[4 + 1])
 int main()
 {
 	setlocale(LC_ALL, "rus");
+	int epox = 0;
 	double w1[4][10], w2[4], T[4 + 1], Reference, E_min = 0.00002, alpha = 0.4, x = 4, current, E = 0;
 	for (int i = 0; i < 4; i++)
 	{
@@ -72,7 +73,11 @@ int main()
 			x += 0.1;
 			E += pow(error, 2);
 		}
+		E /= 2;
+		cout << "Error " << E << endl;
+		epox++;
 	} while (E > E_min);
+	cout << epox;
 	cout << "Эталоное значение " << setw(23) <<  "Полученное значение " << setw(20) << "Отклонение: " <<  endl;
 	for (int i = 0; i < 100; i++)
 	{
