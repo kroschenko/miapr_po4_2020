@@ -27,6 +27,17 @@ double* hidden(double x, double w1[4][10], double T[4])
 	}
 	return result;
 }
+double get_alpha(double w2[], double Error, double Output, double Hiddens[])
+{
+	double alpha = 0, A = 0, B = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		A += pow(Error * w2[i] * (1 - Hiddens[i]) * Hiddens[i], 4) * Hiddens[i] * (1 - Hiddens[i]);
+		B += pow(Error * w2[i] * (1 - Hiddens[i]) * Hiddens[i], 4) * Hiddens[i] * Hiddens[i] * (1 - Hiddens[i]) * (1 - Hiddens[i]);
+	}
+	alpha = 4 * A / (B * (1 + Output * Output));
+	return alpha;
+}
 double output(double x, double w1[4][10], double w2[4], double T[4 + 1])
 {
 	double Result = 0;
@@ -40,21 +51,21 @@ double output(double x, double w1[4][10], double w2[4], double T[4 + 1])
 int main()
 {
 	setlocale(LC_ALL, "rus");
-	double w1[4][10], w2[4], T[4 + 1], Reference, E_min = 0.00002, alpha = 0.4, x = 4, current, E = 0;
+	double w1[4][10], w2[4], T[4 + 1], Reference, E_min = 0.00004, alpha4 = 0.4, alpha = 0.4, x = 4, current, E = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int k = 0; k < 10; k++)
 		{
-			w1[i][k] = ((double)rand() / RAND_MAX) * 0.05;
+			w1[i][k] = ((double)rand() / RAND_MAX) * 0.005;
 		}
-		w2[i] = ((double)rand() / RAND_MAX) * 0.05;
-		T[i] = ((double)rand() / RAND_MAX) * 0.05;
+		w2[i] = ((double)rand() / RAND_MAX) * 0.005;
+		T[i] = ((double)rand() / RAND_MAX) * 0.005;
 	}
-	T[4] = ((double)rand() / RAND_MAX) * 0.05;
+	T[4] = ((double)rand() / RAND_MAX) * 0.005;
 	do
 	{
 		E = 0;
-		for (int q = 0; q < 200; q++)
+		for (int q = 0; q < 400; q++)
 		{
 			current = output(x, w1, w2, T);
 			Reference = function(x + 10 * 0.1);
@@ -66,19 +77,20 @@ int main()
 			for (int k = 0; k < 4; k++)
 			{
 				for (int i = 0; i < 10; i++)
-					w1[k][i] -= alpha * function(x + i * 0.1) * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
-				T[k] += alpha * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
+					w1[k][i] -= alpha4 * function(x + i * 0.1) * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
+				T[k] += alpha4 * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
 			}
+			alpha4 = get_alpha(w2, error, current, Hiddens);
 			x += 0.1;
 			E += pow(error, 2);
 		}
 	} while (E > E_min);
-	cout << "Эталоное значение " << setw(23) <<  "Полученное значение " << setw(20) << "Отклонение: " <<  endl;
-	for (int i = 0; i < 100; i++)
-	{
-		double Result = output(x, w1, w2, T), Ethalonn = function(x + 10 * 0.1);
-		cout << fixed << setprecision(5) << Ethalonn << setw(21) << Result << setw(29) << Result - Ethalonn << endl;
-		x += 0.1;
-	}
+	cout << "Эталоное значение " << setw(23) << "Полученное значение " << setw(20) << "Отклонение: " << endl;
+		for (int i = 0; i < 100; i++)
+		{
+			double Result = output(x, w1, w2, T), Etalonn = function(x + 10 * 0.1);
+			cout << fixed << setprecision(5) << Etalonn << setw(21) << Result << setw(29) << Result - Etalonn << endl;
+			x += 0.1;
+		}
 	system("pause");
 }
