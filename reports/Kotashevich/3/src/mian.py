@@ -1,11 +1,12 @@
 import numpy as np
 
 def func(x):
-    a = 0.1
-    b = 0.1
-    c = 0.05
-    d = 0.1
-    return a * np.cos(b * x) + c * np.sin(d * x)
+    a = 0.3
+    b = 0.3
+    c = 0.08
+    d = 0.3
+    step = 0.3
+    return a * np.cos(b * x * step) + c * np.sin(d * x * step)
 
 def activation(x):
     return np.tanh(x)

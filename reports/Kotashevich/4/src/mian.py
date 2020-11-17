@@ -5,7 +5,8 @@ def func(x):
     b = 0.1
     c = 0.05
     d = 0.1
-    return a * np.cos(b * x) + c * np.sin(d * x)
+    step = 0.3
+    return a * np.cos(b * x * step) + c * np.sin(d * x * step)
 
 def activation(x):
     return np.tanh(x)
