@@ -8,7 +8,7 @@
 
 Подробнее о git: https://denis-creative.com/poshagovaya-instruktsiya-po-rabote-s-git-i-github-dlya-studentov/
 
-Тексты лабораторных: https://drive.google.com/drive/folders/1R2VMjfE-0-bPjYRd1bgFIz03ck-KnIuy?usp=sharing
+Тексты лабораторных: https://drive.google.com/drive/folders/122vocoWZNhzVsN6wnkw_j67W3h6PSm4C?usp=sharing
 
 Списки групп: https://docs.google.com/spreadsheets/d/125kCCh_HGE-aNXQU2pt7jgiD4t7dIlc8T96vqHcnyBw/edit?usp=sharing
 
