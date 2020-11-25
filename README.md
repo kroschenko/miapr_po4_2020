@@ -1,6 +1,6 @@
-# spp_po_2020
+# miapr_po4_2020
 
-Репозиторий для отчетов и программ по предмету "Современные системы программирования"
+Репозиторий для отчетов и программ по предмету "Методы и алгоритмы принятия решений"
 
 1. Делаем форк репо
 1. Выполняем работу
@@ -8,9 +8,9 @@
 
 Подробнее о git: https://denis-creative.com/poshagovaya-instruktsiya-po-rabote-s-git-i-github-dlya-studentov/
 
-Тесты лабораторных: https://drive.google.com/folderview?id=1Vrftg5hXXg_FdMLT5bFFnyxJeDeN4qpT
+Тексты лабораторных: https://drive.google.com/drive/folders/1R2VMjfE-0-bPjYRd1bgFIz03ck-KnIuy?usp=sharing
 
-Списки групп: https://docs.google.com/spreadsheets/d/16U_tBphyLUSa3Zxx0ktv-bqFX_7qJjb2mWJL6Cub6YQ/edit?usp=sharing
+Списки групп: https://docs.google.com/spreadsheets/d/125kCCh_HGE-aNXQU2pt7jgiD4t7dIlc8T96vqHcnyBw/edit?usp=sharing
 
 
 
