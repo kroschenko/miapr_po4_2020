@@ -83,7 +83,7 @@ int main()
 	setlocale(LC_ALL, "rus");
 
 	double w1[2][6], w2[2], T[2 + 1], Reference, E_min = 0.00002, alpha = 0.4, x = 4, current, E = 0;
-
+	int epoch = 0;
 	for (int i = 0; i < 2; i++)
 
 	{
@@ -149,8 +149,10 @@ int main()
 		E /= 2;
 
 		cout << "Oshibka: " << E << endl;
-
+		epoch++;
 	} while (E > E_min);
+	cout << "Эпох: \n "<<  epoch;
+		
 
 	for (int i = 0; i < 100; i++)
 
