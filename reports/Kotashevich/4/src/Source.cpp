@@ -62,7 +62,7 @@ int main()
 {
 	setlocale(LC_ALL, "rus");
 	int epox = 0;
-	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, alpha1 = 0.4, x = 4, current, E = 0;
+	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, alpha1 = 0.4, x = 0, current, E = 0;
 	for (int i = 0; i < hidden_layer; i++)
 	{
 		for (int k = 0; k < input_layer; k++)
