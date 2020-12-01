@@ -35,6 +35,18 @@ double* hidden(double x, double w1[hidden_layer][input_layer], double* T)
 	return result;
 }
 
+double get_alpha(double* w2, double Error, double Output, double* Hiddens)
+{
+	double alpha = 0, A = 0, B = 0;
+	for (int i = 0; i < hidden_layer; i++)
+	{
+		A += pow(Error * w2[i] * (1 - Hiddens[i]) * Hiddens[i], 2) * Hiddens[i] * (1 - Hiddens[i]);
+		B += pow(Error * w2[i] * (1 - Hiddens[i]) * Hiddens[i], 2) * Hiddens[i] * Hiddens[i] * (1 - Hiddens[i]) * (1 - Hiddens[i]);
+	}
+	alpha = 4 * A / (B * (1 + Output * Output));
+	return alpha;
+}
+
 double output(double x, double w1[hidden_layer][input_layer], double* w2, double* T)
 {
 	double Result = 0;
@@ -50,7 +62,7 @@ int main()
 {
 	setlocale(LC_ALL, "rus");
 	int epox = 0;
-	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, x = 4, current, E = 0;
+	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, alpha1 = 0.4, x = 4, current, E = 0;
 	for (int i = 0; i < hidden_layer; i++)
 	{
 		for (int k = 0; k < input_layer; k++)
@@ -76,9 +88,10 @@ int main()
 			for (int k = 0; k < hidden_layer; k++)
 			{
 				for (int i = 0; i < input_layer; i++)
-					w1[k][i] -= alpha * function(x + i * 0.1) * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
-				T[k] += alpha * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
+					w1[k][i] -= alpha1 * function(x + i * 0.1) * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
+				T[k] += alpha1 * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
 			}
+			alpha1 = get_alpha(w2, error, current, Hiddens);
 			x += 0.1;
 			E += pow(error, 2);
 		}
@@ -87,7 +100,7 @@ int main()
 		epox++;
 	} while (E > E_min);
 	cout << epox << endl;
-	cout << "Эталон" << setw(23) << "Прогноз" << setw(20) << "Отклонение" << endl;
+	cout << "Эталон" << setw(23) << "Прогноз" << setw(20) << "Отклонение1" << endl;
 	for (int i = 0; i < 100; i++)
 	{
 		double Result = output(x, w1, w2, T), Ethalonn = function(x + 10 * 0.1);
