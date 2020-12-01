@@ -50,6 +50,7 @@ double output(double x, double w1[2][6], double w2[2], double T[2 + 1])
 }
 int main()
 {
+	int epoch = 0;
 	setlocale(LC_ALL, "rus");
 	double w1[2][6], w2[2], T[2 + 1], Reference, E_min = 0.00002, alpha2 = 0.4, alpha = 0.4, x = 4, current, E = 0;
 	for (int i = 0; i < 2; i++)
@@ -65,7 +66,7 @@ int main()
 	do
 	{
 		E = 0;
-		for (int q = 0; q < 200; q++)
+		for (int q = 0; q < 600; q++) /// Обучающая выборка, изменял от 100 до 1000, самый минимум эпох в 600, начиная с 700 начинают эпохи расти
 		{
 			current = output(x, w1, w2, T);
 			Reference = function(x + 6 * 0.1);
@@ -86,7 +87,9 @@ int main()
 		}
 		E /= 2;
 		cout << "Oshibka: " << E << endl;
+		epoch++;
 	} while (E > E_min);
+	cout << "Количество эпох " << epoch << "\n";
 	for (int i = 0; i < 100; i++)
 	{
 		double Resultat = output(x, w1, w2, T), Etalonn = function(x + 6 * 0.1);
