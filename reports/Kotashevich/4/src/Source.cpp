@@ -62,7 +62,7 @@ int main()
 {
 	setlocale(LC_ALL, "rus");
 	int epox = 0;
-	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, alpha1 = 0.4, x = 0, current, E = 0;
+	double w1[hidden_layer][input_layer], w2[hidden_layer], T[hidden_layer + 1], Reference, E_min = 0.00002, alpha = 0.4, alpha1 = 0.4, x = 4, current, E = 0;
 	for (int i = 0; i < hidden_layer; i++)
 	{
 		for (int k = 0; k < input_layer; k++)
@@ -92,7 +92,7 @@ int main()
 				T[k] += alpha1 * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
 			}
 			alpha1 = get_alpha(w2, error, current, Hiddens);
-			x += 0.1;
+			x += 0.7;
 			E += pow(error, 2);
 		}
 		E /= 2;
@@ -105,7 +105,7 @@ int main()
 	{
 		double Result = output(x, w1, w2, T), Ethalonn = function(x + 10 * 0.1);
 		cout << fixed << setprecision(5) << Ethalonn << setw(21) << Result << setw(29) << Result - Ethalonn << endl;
-		x += 0.1;
+		x += 0.7;
 	}
 	system("pause");
 }
