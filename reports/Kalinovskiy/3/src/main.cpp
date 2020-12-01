@@ -25,7 +25,7 @@ int main()
 	do
 	{
 		E = 0;
-		for (int q = 0; q < 1000; q++) //обучающая выборка, при увеличении числа число epoch падает
+		for (int q = 0; q < 200; q++) //обучающая выборка, при увеличении числа число epoch падает
 		{
 			current = output(x, w1, w2, T);
 			Reference = function(x + 8 * 0.2);
