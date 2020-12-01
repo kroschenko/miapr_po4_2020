@@ -42,7 +42,7 @@ int main()
 	do
 	{
 		Emax = 0;
-		for (int q = 0; q < 100; q++)
+		for (int q = 0; q < 500; q++)
 		{
 			current = Print(x, w1, w2, T);
 			etalon = Func(x + 6 * 0.1);
