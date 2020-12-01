@@ -31,6 +31,7 @@ double* hidden(double x, double Wes1[2][6], double T[2]) {
 	}
 	return result_value;
 }
+
 double output(double x, double Wes1[2][6], double Wes2[2], double T[2 + 1]) {
 	double result = 0;
 	double* hidden_result_value = hidden(x, Wes1, T);
