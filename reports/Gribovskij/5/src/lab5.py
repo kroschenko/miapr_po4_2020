@@ -1,4 +1,3 @@
-import itertools
 import numpy as np
 
 def relu(x):
@@ -74,15 +73,15 @@ predictions   = []
 learning_rate = 0.5
 epoch         = 0
 epoch_maximum = 15000
-error_minimum = 1e-5  # минимальная ошибка
+error_minimum = 1e-6  # минимальная ошибка
 n_input       = 20    # количество входов
 n_hidden      = 10    # количество элементов скрытого слоя
-n_output      = 8     # количество выходов
+n_output      = 3     # количество выходов
 w_hidden      = np.random.normal(0.0,2 ** -0.5,(n_hidden,n_input))
 w_input       = np.random.normal(0.0,1,(n_output,n_hidden))
 
 vectors = np.array([[1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],[1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1]])
-codes   = np.array([[0,0,0,0,0,1,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,1]])
+codes   = np.array([[1,0,0],[0,1,0],[0,0,1]])
 for vector, code in zip(vectors, codes):
     com = []
     com.append(vector)
@@ -100,22 +99,64 @@ while True:
     if error_learning <= error_minimum or epoch > epoch_maximum:
         break
 
-vvectors = np.array([[0,1,0,0,1,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0],[0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1],[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]])
-ccodes   = np.array([[1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,0,0,0,1,0]])
+#print(error_learning)
+#print(epoch)
+
+print("\nРЕЗУЛЬТАТЫ ОБУЧЕНИЯ:")
+for sample,predict in learning:
+    output = prediction(sample,w_hidden,w_input)
+    print("прогноз  : {:<30}\nожидаемый: {:<30}\n".format(str(output),str(np.array(predict))))
+
+vvectors = np.array([[1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0]])
+ccodes   = np.array([[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0]])
 for vector, code in zip(vvectors, ccodes):
     com = []
     com.append(vector)
     com.append(code)
     predictions.append(tuple(com))
 
-print("\nРЕЗУЛЬТАТЫ ОБУЧЕНИЯ:")
-for sample,predict in learning:
-    print(sample)
+print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ:")
+for sample,predict in predictions:
     output = prediction(sample,w_hidden,w_input)
     print("прогноз  : {:<30}\nожидаемый: {:<30}\n".format(str(output),str(np.array(predict))))
 
-print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ:")
+predictions = []
+vvectors = np.array([[1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0],[1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0],[1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0],[1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0],[1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0]])
+ccodes   = np.array([[0,1,0],[0,1,0],[0,1,0],[0,1,0],[0,1,0]])
+for vector, code in zip(vvectors, ccodes):
+    com = []
+    com.append(vector)
+    com.append(code)
+    predictions.append(tuple(com))
+
 for sample,predict in predictions:
-    print(sample)
     output = prediction(sample,w_hidden,w_input)
     print("прогноз  : {:<30}\nожидаемый: {:<30}\n".format(str(output),str(np.array(predict))))
+
+predictions = []
+vvectors = np.array([[1,1,1,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,1,1],[1,1,1,0,0,0,1,1,1,0,0,0,1,0,1,0,0,0,1,1],[1,1,1,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,1,1],[1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,1,1],[1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,1,0,1,1]])
+ccodes   = np.array([[0,0,1],[0,0,1],[0,0,1],[0,0,1],[0,0,1]])
+for vector, code in zip(vvectors, ccodes):
+    com = []
+    com.append(vector)
+    com.append(code)
+    predictions.append(tuple(com))
+
+for sample,predict in predictions:
+    output = prediction(sample,w_hidden,w_input)
+    print("прогноз  : {:<30}\nожидаемый: {:<30}\n".format(str(output),str(np.array(predict))))
+
+'''
+vvectors = np.array([[0,1,0,0,1,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0],[0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1],[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],[0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]])
+ccodes   = np.array([[1,0,0],[0,1,0],[0,0,1],[1,0,0],[0,1,0]])
+for vector, code in zip(vvectors, ccodes):
+    com = []
+    com.append(vector)
+    com.append(code)
+    predictions.append(tuple(com))
+
+print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ:")
+for sample,predict in predictions:
+    output = prediction(sample,w_hidden,w_input)
+    print("прогноз  : {:<30}\nожидаемый: {:<30}\n".format(str(output),str(np.array(predict))))
+'''
