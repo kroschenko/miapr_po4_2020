@@ -1,98 +1,107 @@
 #include <iostream>
-#include <math.h>
 #include <iomanip>
+
 using namespace std;
-double Sigmoid(double x) {
-	return 1 / (1 + pow(2, -x));
-}
 
-double func(double x) {
-	double a = 0.4, b = 0.4, c = 0.08, d = 0.4;
-	return a * cos(b * x) + c * sin(d * x);
-}
-
-double* hidden(double x, double Wes1[2][6], double T[2]) {
-	double* Result = new double[2];
-	for (int i = 0; i < 2; i++) {
-		Result[i] = 0;
-	}
-	double entrances[6];
-	for (int k = 0; k < 6; k++, x += 0.1) {
-		entrances[k] = func(x);
-	}
-	for (int i = 0; i < 2; i++){
-		for (int k = 0; k < 6; k++) {
-			Result[i] += entrances[k] * Wes1[i][k];
-		}
-		Result[i] -= T[i];
-		Result[i] = Sigmoid(Result[i]);
-	}
-	return Result;
-}
-
-double adapt(double *Wes2, double Error, double Output, double *Hiddens) {
-	double Alpha = 0, A = 0, B = 0;
-	for (int i = 0; i < 2; i++) {
-		A += pow(Error * Wes2[i] * (1 - Hiddens[i]) * Hiddens[i], 2) * Hiddens[i] * (1 - Hiddens[i]);
-		B += pow(Error * Wes2[i] * (1 - Hiddens[i]) * Hiddens[i], 2) * Hiddens[i] * Hiddens[i] * (1 - Hiddens[i]) * (1 - Hiddens[i]);
-	}
-	Alpha = 4 * A / (B * (1 + Output * Output)); //24 formula
-	return Alpha;
-}
-
-double output(double x, double Wes1[2][6], double Wes2[2], double T[2 + 1]) {
-	double Resultat = 0;
-	double* hidden_Result = hidden(x, Wes1, T);
-	for (int j = 0; j < 2; j++) {
-		Resultat += hidden_Result[j] * Wes2[j];
-	}
-	Resultat -= T[4];
-	return Resultat;
-}
+double Func(double x);
+double Sigmoid(double x);
+double* Hidden(double x, double Wes1[2][6], double T[2]);
+double output(double x, double Wes1[2][6], double Wes2[2], double T[2 + 1]);
+double Adapt(double Wes2[], double error, double output, double hiddens[]);
 
 int main() {
 	setlocale(0, "");
-	double Wes1[2][6], Wes2[2], T[2 + 1], reference_value, E_min = 0.00002, Alpha2 = 0.4, Alpha = 0.4, x = 4, current, E = 0;
+	double Wes1[2][6], Wes2[2], T[2 + 1],
+		ethelon_value, current,
+		Alpha = 0.4, Alpha2, x = 4,
+		Emin = 0.002, Emax = 0;
+	int eras = 0;
 	for (int i = 0; i < 2; i++) {
 		for (int k = 0; k < 6; k++) {
-			Wes1[i][k] = ((double)rand() / RAND_MAX) * 0.005;
+			Wes1[i][k] = ((double)rand() / RAND_MAX);
 		}
-		Wes2[i] = ((double)rand() / RAND_MAX) * 0.005;
-		T[i] = ((double)rand() / RAND_MAX) * 0.005;
+		Wes2[i] = ((double)rand() / RAND_MAX);
+		T[i] = ((double)rand() / RAND_MAX);
 	}
-	T[4] = ((double)rand() / RAND_MAX) * 0.005;
-
+	T[4] = ((double)rand() / RAND_MAX);
 	do {
-		E = 0;
+		Emax = 0;
 		for (int q = 0; q < 300; q++) {
 			current = output(x, Wes1, Wes2, T);
-			reference_value = func(x + 6 * 0.1);
-			double error = current - reference_value;
-			double* Hiddens = hidden(x, Wes1, T);
+			ethelon_value = Func(x + 6 * 0.1);
+			double error = current - ethelon_value;
+			double* hiddens = Hidden(x, Wes1, T);
+			Alpha2 = Adapt(Wes2, error, current, hiddens);
 			for (int j = 0; j < 2; j++) {
-				Wes2[j] -= Alpha * error * Hiddens[j];
+				Wes2[j] -= Alpha * error * hiddens[j];
 			}
 			T[4] += Alpha * error;
 			for (int k = 0; k < 2; k++) {
 				for (int i = 0; i < 6; i++) {
-					Wes1[k][i] -= Alpha2 * func(x + i * 0.1) * Hiddens[k] * (1 - Hiddens[k]) * Wes2[k] * error;
+					Wes1[k][i] -= Alpha2 * Func(x + i * 0.1) * hiddens[k] * (1 - hiddens[k]) * Wes2[k] * error;
 				}
-				T[k] += Alpha2 * Hiddens[k] * (1 - Hiddens[k]) * Wes2[k] * error;
-			}
-			Alpha2 = adapt(Wes2, error, current, Hiddens);
+				T[k] += Alpha2 * hiddens[k] * (1 - hiddens[k]) * Wes2[k] * error;
+			}			
 			x += 0.1;
-			E += pow(error, 2);
+			Emax += pow(error, 2);
 		}
-		E /= 2;
-		cout << "\rError: " << E;
-	} while (E > E_min);
-
+		Emax /= 2;
+		eras++;
+		cout << "\rError: " << Emax;
+	} while (Emax > Emin);
 	cout << endl;
-	for (int i = 0; i < 30; i++) {
-		double result = output(x, Wes1, Wes2, T),
-		       ethelon_value = func(x + 6 * 0.1);
-		cout << i + 1 << "\t" << ethelon_value << right << setw(15) << result << right << setw(15) << (result - ethelon_value)*(result - ethelon_value) << endl;
-		x += 0.2;
+	cout << "Эпохи: " << eras << endl;
+	cout << setw(27) << left << "Эталонs" << setw(29) << left << "Получ. знач." << setw(20) << left << "Отклонение" << endl;
+	for (int i = 0; i < 20; i++) {
+		double result = output(x, Wes1, Wes2, T), 
+			ethelon_value = Func(x + 6 * 0.1);
+		cout << setw(27) << left << ethelon_value << setw(27) << left << result << setw(30) << (result - ethelon_value)*(result - ethelon_value) << endl;
+		x += 0.1;
 	}
 	system("pause");
+	return 0;
+}
+
+double Func(double x) {
+	double a = 0.4, b = 0.4, c = 0.08, d = 0.4;
+	return a * cos(b * x) + c * sin(d * x);
+}
+double Sigmoid(double x) {
+	return 1 / (1 + pow(2, -x));
+}
+double* Hidden(double x, double Wes1[2][6], double T[2]) {
+	double* result_value = new double[2];
+	for (int i = 0; i < 2; i++) {
+		result_value[i] = 0;
+	}
+	double entrances[6];
+	for (int k = 0; k < 6; k++, x += 0.1) {
+		entrances[k] = Func(x);
+	}
+	for (int i = 0; i < 2; i++) {
+		for (int k = 0; k < 6; k++) {
+			result_value[i] += entrances[k] * Wes1[i][k];
+		}
+		result_value[i] -= T[i];
+		result_value[i] = Sigmoid(result_value[i]);
+	}
+	return result_value;
+}
+double output(double x, double Wes1[2][6], double Wes2[2], double T[2 + 1]) {
+	double result = 0;
+	double* hidden_neuron = Hidden(x, Wes1, T);
+	for (int j = 0; j < 2; j++) {
+		result += hidden_neuron[j] * Wes2[j];
+	}
+	result -= T[4];
+	return result;
+}
+double Adapt(double Wes2[], double error, double output, double hiddens[]) {
+	double Alpha2 = 0, A = 0, B = 0;
+	for (int i = 0; i < 2; i++) {
+		A += pow(error * Wes2[i] * (1 - hiddens[i]) * hiddens[i], 2) * hiddens[i] * (1 - hiddens[i]);
+		B += pow(error * Wes2[i] * (1 - hiddens[i]) * hiddens[i], 2) * hiddens[i] * hiddens[i] * (1 - hiddens[i]) * (1 - hiddens[i]);
+	}
+	Alpha2 = 4 * A / (B * (1 + output * output));
+	return Alpha2;
 }
