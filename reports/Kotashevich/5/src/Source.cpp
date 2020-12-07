@@ -1,6 +1,6 @@
 ﻿#include <iostream>
-#define INPUT 6
-#define HIDDEN 2
+#define INPUT 20
+#define HIDDEN 17
 using namespace std;
 
 double sigmoid(double x)
