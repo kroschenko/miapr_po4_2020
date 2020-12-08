@@ -92,7 +92,7 @@ int main()
 				T[k] += alpha1 * Hiddens[k] * (1 - Hiddens[k]) * w2[k] * error;
 			}
 			alpha1 = get_alpha(w2, error, current, Hiddens);
-			x += 0.1;
+			x += 0.01;
 			E += pow(error, 2);
 		}
 		E /= 2;
