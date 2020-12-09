@@ -16,8 +16,9 @@ import matplotlib.pyplot
 # hiddens - number neurons
 # outputs - number neurons
 # Ee - desired squared error
-# alpha - learning rate
-def lab(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha):
+# alpha_ki - learning rate (inputs - hiddens)
+# alpha_ij - learning rate (hiddens - outputs)
+def lab4(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha_ij):
     # Функция возвращает массив с эталонными значениями
     def get_etalons(n):
         etalons = numpy.zeros(n)
@@ -65,9 +66,6 @@ def lab(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha):
     valuesYforGraph = []
     eras = 0
     while 1:
-        sum1 = 0
-        sum2 = 0
-        sum3 = 0
         for q in range(m1 - inputs):
             # Si = x * wki - Ti
             x = etalons[q:(q+inputs)]
@@ -94,38 +92,39 @@ def lab(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha):
                 for j in range(outputs):
                     j_i[i] += j_j[j] * dF_j * weights_ij[i][j]
             #print(j_i)
+
+            #for j in range(outputs):
+            sum1 = j_j**2 * (1 - y_j**2)
+
+            for i in range(hiddens):
+                sum2 = y_i[i]**2
+
+            #for j in range(hiddens):
+            sum3 = j_j**2 * y_j**2 * (1 - y_j)**2
+
+            alpha_ki = 4 * sum1 / ( (1 + sum2) * sum3 )
+
             # wij = wij - alpha * jj * dFj * yi
             for i in range(hiddens):
                 for j in range(outputs):
-                    weights_ij[i][j] -= alpha * j_j[j] * dF_j * y_j[j]
+                    weights_ij[i][j] -= alpha_ij * j_j[j] * dF_j * y_j[j]
             #print(weights_ij)
             # Tj = Tj + alpha * jj * dFj
             for j in range(outputs):
-                tresholds_j += alpha * j_j[j] * dF_j
+                tresholds_j += alpha_ij * j_j[j] * dF_j
             #print(tresholds_j)
             # wki = wki - alpha * ji * dFi * yi
             for k in range(inputs):
                 for i in range(hiddens):
                     dFi = y_i[i] * (1 - y_i[i]) # derivative sigmoid func
-                    weights_ki[k][i] -= alpha * j_i[i] * dFi * y_i[i]
+                    weights_ki[k][i] -= alpha_ki * j_i[i] * dFi * y_i[i]
             #print(weights_ki)
             # Ti = Ti + alpha * ji * dFi
             for i in range(hiddens):
                 dFi = y_i[i] * (1 - y_i[i]) # derivative sigmoid func
-                tresholds_i += alpha * j_i[i] * dFi
+                tresholds_i += alpha_ki * j_i[i] * dFi
             #print(tresholds_i)
-            
-            #for j in range(outputs):
-            sum1 += j_j**2 * (1 - y_j**2)
-
-            for i in range(hiddens):
-                sum2 += y_i[i]**2
-
-            #for j in range(hiddens):
-            sum3 += j_j**2 * y_j**2 * (1 - y_j)**2
-            
-        alpha = 4 * sum1 / ( (1 + sum2) * sum3 )
-
+        
         E = 0
         for j in range(outputs):
             E += 1./2 * (y_j[j] - etalons[q + inputs + j]) ** 2
@@ -184,20 +183,22 @@ def lab(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha):
             y_j,
             (etalons[q + m1 + inputs] - y_j) ** 2)
         )
-
+    print('Eras: %d' % eras)
     matplotlib.pyplot.show()
 
-lab(
+random.seed(2)
+lab4(
     30,     # m1 - number neurons for learning
     40,     # m2 - number neurons for test
     0.1,    # a - parametr for etalon function
     0.5,    # b - parametr for etalon function
     0.09,   # c - parametr for etalon function
     0.5,    # d - parametr for etalon function
-    0.001,   # step - parametr for etalon function
+    0.001,  # step - parametr for etalon function
     8,      # inputs - number neurons
     3,      # hiddens - number neurons
     1,      # outputs - number neurons
     1e-8,   # Ee - desired squared error
-    0.001    # alpha - learning rate
+    0.001,  # alpha_ki - learning rate (inputs - hiddens)
+    0.001   # alpha_ij - learning rate (hiddens - outputs)
 )
