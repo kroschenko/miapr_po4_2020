@@ -26,7 +26,7 @@ int main() {
 	T[4] = ((double)rand() / RAND_MAX);
 	do {
 		Emax = 0;
-		for (int q = 0; q < 300; q++) {
+		for (int q = 0; q < 200; q++) {
 			current = output(x, Wes1, Wes2, T);
 			ethelon_value = Func(x + 8 * 0.1);
 			double error = current - ethelon_value;
