@@ -188,6 +188,6 @@ lab3(
     3,      # hiddens - number neurons
     1,      # outputs - number neurons
     1e-8,   # Ee - desired squared error
-    0.001,      # alpha_ki - learning rate (inputs - hiddens)
+    0.001,  # alpha_ki - learning rate (inputs - hiddens)
     0.001   # alpha_ij - learning rate (hiddens - outputs)
 )
