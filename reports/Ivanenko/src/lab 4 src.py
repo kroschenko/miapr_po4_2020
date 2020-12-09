@@ -56,6 +56,13 @@ def MSE(y, Y):
     return np.mean((y - Y) ** 2)
 
 
+vector1 = [1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1]
+vector2 = [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+vector3 = [1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1]
+inputs = [0] * 10
+
+
+
 step = 0.1
 counter = 0
 train = []
@@ -72,61 +79,62 @@ for i in range(-15, 15):
     combo = tuple(combol)
     train.append(combo)
 
+print(train[0])
 
-learning_rate = 0.05
-network = Network(learning_rate)
+# learning_rate = 0.05
+# network = Network(learning_rate)
 
-losses = {'train':[], 'validation':[]}
+# losses = {'train':[], 'validation':[]}
 
-Emin = 1e-6
-train_loss = 0
+# Emin = 1e-6
+# train_loss = 0
 
-epoch = 0
-while True:
-    inputs = []
-    correct_predictions = []
-    for input_stat, correct_predict in train:
-        network.train(np.array(input_stat), correct_predict)
-        inputs.append(np.array(input_stat))
-        correct_predictions.append(np.array(correct_predict))
+# epoch = 0
+# while True:
+#     inputs = []
+#     correct_predictions = []
+#     for input_stat, correct_predict in train:
+#         network.train(np.array(input_stat), correct_predict)
+#         inputs.append(np.array(input_stat))
+#         correct_predictions.append(np.array(correct_predict))
 
-    train_loss = MSE(network.predict(np.array(inputs).T), np.array(correct_predictions))
-    epoch += 1
-    if train_loss <= Emin:
-        break
+#     train_loss = MSE(network.predict(np.array(inputs).T), np.array(correct_predictions))
+#     epoch += 1
+#     if train_loss <= Emin:
+#         break
 
-print("epochs: {}, training loss: {}".format(
-    str(epoch),
-    str(train_loss)
-    ))
+# print("epochs: {}, training loss: {}".format(
+#     str(epoch),
+#     str(train_loss)
+#     ))
 
-print("\nРЕЗУЛЬТАТЫ ОБУЧЕНИЯ:")
-for input_stat, correct_predict in train:
-    print("the prediction is: {}, expected: {}, mistake: {}".format(
-        str(network.predict(input_stat)),
-        str(correct_predict),
-        str(network.predict(input_stat) - correct_predict)
-        ))
+# print("\nРЕЗУЛЬТАТЫ ОБУЧЕНИЯ:")
+# for input_stat, correct_predict in train:
+#     print("the prediction is: {}, expected: {}, mistake: {}".format(
+#         str(network.predict(input_stat)),
+#         str(correct_predict),
+#         str(network.predict(input_stat) - correct_predict)
+#         ))
 
-predict = []
-for i in range(30, 45):
-    combol = []
-    inputs = []
-    for j in range(6):
-        x = counter * step
-        inputs.append(func(x))
-        counter += 1
-    combol.append(inputs)
-    x = counter * step
-    combol.append(func(x))
-    combo = tuple(combol)
-    predict.append(combo)
+# predict = []
+# for i in range(30, 45):
+#     combol = []
+#     inputs = []
+#     for j in range(6):
+#         x = counter * step
+#         inputs.append(func(x))
+#         counter += 1
+#     combol.append(inputs)
+#     x = counter * step
+#     combol.append(func(x))
+#     combo = tuple(combol)
+#     predict.append(combo)
 
-print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ")
-for input_stat, correct_predict in predict:
-    print("the prediction is: {}, expected: {}, mistake: {}".format(
-        str(network.predict(input_stat)),
-        str(correct_predict),
-        str(network.predict(input_stat) - correct_predict)
-        ))
+# print("\nРЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ")
+# for input_stat, correct_predict in predict:
+#     print("the prediction is: {}, expected: {}, mistake: {}".format(
+#         str(network.predict(input_stat)),
+#         str(correct_predict),
+#         str(network.predict(input_stat) - correct_predict)
+#         ))
 
