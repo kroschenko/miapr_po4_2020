@@ -1,6 +1,5 @@
 ﻿#include <iostream>
 #include <math.h>
-#include <Windows.h>
 #include <iomanip>
 using namespace std;
 
@@ -12,8 +11,7 @@ double Adapt_Step(double w2[], double err, double Print, double hiddens[]);
 
 int main()
 {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+	setlocale(LC_ALL, "rus");
 
 	double w1[2][6],
 		w2[2],
@@ -42,7 +40,7 @@ int main()
 	do
 	{
 		Emax = 0;
-		for (int q = 0; q < 500; q++)
+		for (int q = 0; q < 300; q++)
 		{
 			current = Print(x, w1, w2, T);
 			etalon = Func(x + 6 * 0.1);
