@@ -18,7 +18,7 @@ import matplotlib.pyplot
 # Ee - desired squared error
 # alpha_ki - learning rate (inputs - hiddens)
 # alpha_ij - learning rate (hiddens - outputs)
-def lab3(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha_ij):
+def lab4(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha_ij):
     # Функция возвращает массив с эталонными значениями
     def get_etalons(n):
         etalons = numpy.zeros(n)
@@ -92,6 +92,18 @@ def lab3(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha
                 for j in range(outputs):
                     j_i[i] += j_j[j] * dF_j * weights_ij[i][j]
             #print(j_i)
+
+            #for j in range(outputs):
+            sum1 = j_j**2 * (1 - y_j**2)
+
+            for i in range(hiddens):
+                sum2 = y_i[i]**2
+
+            #for j in range(hiddens):
+            sum3 = j_j**2 * y_j**2 * (1 - y_j)**2
+
+            alpha_ki = 4 * sum1 / ( (1 + sum2) * sum3 )
+
             # wij = wij - alpha * jj * dFj * yi
             for i in range(hiddens):
                 for j in range(outputs):
@@ -112,6 +124,7 @@ def lab3(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha
                 dFi = y_i[i] * (1 - y_i[i]) # derivative sigmoid func
                 tresholds_i += alpha_ki * j_i[i] * dFi
             #print(tresholds_i)
+        
         E = 0
         for j in range(outputs):
             E += 1./2 * (y_j[j] - etalons[q + inputs + j]) ** 2
@@ -170,13 +183,11 @@ def lab3(m1, m2, a, b, c, d, step, inputs, hiddens, outputs, Ee, alpha_ki, alpha
             y_j,
             (etalons[q + m1 + inputs] - y_j) ** 2)
         )
-
     print('Eras: %d' % eras)
-
     matplotlib.pyplot.show()
 
 random.seed(2)
-lab3(
+lab4(
     30,     # m1 - number neurons for learning
     40,     # m2 - number neurons for test
     0.1,    # a - parametr for etalon function
