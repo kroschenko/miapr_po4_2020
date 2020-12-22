@@ -240,54 +240,89 @@ class lab5:
         print('\nFunction lab5 :: learning are end\n')
 
     def save(self):
-        print('\nFunction lab5 :: save are start\n')
+        # print('weights_ki')
+        # print(self.weights_ki)
 
-        csv_separator = ', '
+        # print('weights_ij')
+        # print(self.weights_ij)
 
-        fp = open('weights_ki.csv', 'w')
-        for k in range(self.inputs):
-            for i in range(self.hiddens):
-                fp.write( str(self.weights_ki[k][i]) )
-                if i != (self.hiddens - 1):
-                    fp.write(csv_separator)
-            if k != (self.inputs - 1):
-                fp.write('\n')
-        fp.close()
+        # print('tresholds_i')
+        # print(self.tresholds_i)
 
-        fp = open('weights_ij.csv', 'w')
-        for i in range(self.hiddens):
-            for j in range(self.outputs):
-                fp.write( str(self.weights_ij[i][j]) )
-                if j != (self.outputs - 1):
-                    fp.write(csv_separator)
-            if i != (self.hiddens - 1):
-                fp.write('\n')
-        fp.close()
+        # print('tresholds_j')
+        # print(self.tresholds_j)
 
-        fp = open('tresholds_i.csv', 'w')
-        for i in range(self.hiddens):
-            fp.write( str(self.tresholds_i[i]) )
-            if i != (self.hiddens - 1):
-                fp.write(csv_separator)
-        fp.close()
-
-        fp = open('tresholds_j.csv', 'w')
-        for j in range(self.outputs):
-            fp.write( str(self.tresholds_j[j]) )
-            if j != (self.outputs - 1):
-                fp.write(csv_separator)
-        fp.close()
-
-        print('\nFunction lab5 :: save are end\n')
-
-    def test(self):
-        print('\nFunction lab5 :: test are start\n')
-
-        print('Save weights and tresholds:')
+        print('\nSave weights and tresholds:')
         print('y - yes')
         print('n - no')
         key = input()
         if key == 'y':
-            self.save()
+            csv_separator = ', '
 
-        print('\nFunction lab5 :: test are end\n')
+            fp = open('weights_ki.csv', 'w')
+            for k in range(self.inputs):
+                for i in range(self.hiddens):
+                    fp.write( str(self.weights_ki[k][i]) )
+                    if i != (self.hiddens - 1):
+                        fp.write(csv_separator)
+                if k != (self.inputs - 1):
+                    fp.write('\n')
+            fp.close()
+
+            fp = open('weights_ij.csv', 'w')
+            for i in range(self.hiddens):
+                for j in range(self.outputs):
+                    fp.write( str(self.weights_ij[i][j]) )
+                    if j != (self.outputs - 1):
+                        fp.write(csv_separator)
+                if i != (self.hiddens - 1):
+                    fp.write('\n')
+            fp.close()
+
+            fp = open('tresholds_i.csv', 'w')
+            for i in range(self.hiddens):
+                fp.write( str(self.tresholds_i[i]) )
+                if i != (self.hiddens - 1):
+                    fp.write(csv_separator)
+            fp.close()
+
+            fp = open('tresholds_j.csv', 'w')
+            for j in range(self.outputs):
+                fp.write( str(self.tresholds_j[j]) )
+                if j != (self.outputs - 1):
+                    fp.write(csv_separator)
+            fp.close()
+
+    def test(self, etalon):
+        # Взвешенная сумма скрытого слоя
+        # Si = x * wki - Ti
+        x = numpy.array(etalon)
+        S_i = x.dot(self.weights_ki) - self.tresholds_i
+        #print(S_i)
+
+        # Выходные значения скрытого слоя
+        # yi = Sigm(Si)
+        y_i = numpy.zeros(len(S_i))
+        for i in range(len(S_i)):
+            y_i[i] = 1. / (1. + numpy.exp( - S_i[i] )) # sigmoid func
+        #print(y_i)
+
+        # Взвешенная сумма скрытого слоя
+        # Sj = yi * wij - Tj
+        S_j = y_i.dot(self.weights_ij) - self.tresholds_j
+        #print(S_j)
+
+        # Выходные значения скрытого слоя
+        # yj = Linear(Sj) = Sj
+        y_j = S_j
+
+        maxValue = y_j[0]
+        maxValueIndex = 0
+        for j in range(self.outputs):
+            if y_j[j] > maxValue:
+                maxValue = y_j[j]
+                maxValueIndex = j
+
+        print('y_j = ', y_j)
+        print('etalon = ', etalon)
+        print('etalon is class #%d\n' % (maxValueIndex))
