@@ -242,12 +242,14 @@ class lab5:
     def save(self):
         print('\nFunction lab5 :: save are start\n')
 
+        csv_separator = ', '
+
         fp = open('weights_ki.csv', 'w')
         for k in range(self.inputs):
             for i in range(self.hiddens):
                 fp.write( str(self.weights_ki[k][i]) )
                 if i != (self.hiddens - 1):
-                    fp.write('\t')
+                    fp.write(csv_separator)
             if k != (self.inputs - 1):
                 fp.write('\n')
         fp.close()
@@ -257,7 +259,7 @@ class lab5:
             for j in range(self.outputs):
                 fp.write( str(self.weights_ij[i][j]) )
                 if j != (self.outputs - 1):
-                    fp.write('\t')
+                    fp.write(csv_separator)
             if i != (self.hiddens - 1):
                 fp.write('\n')
         fp.close()
@@ -266,14 +268,14 @@ class lab5:
         for i in range(self.hiddens):
             fp.write( str(self.tresholds_i[i]) )
             if i != (self.hiddens - 1):
-                fp.write('\t')
+                fp.write(csv_separator)
         fp.close()
 
         fp = open('tresholds_j.csv', 'w')
         for j in range(self.outputs):
             fp.write( str(self.tresholds_j[j]) )
             if j != (self.outputs - 1):
-                fp.write('\t')
+                fp.write(csv_separator)
         fp.close()
 
         print('\nFunction lab5 :: save are end\n')
